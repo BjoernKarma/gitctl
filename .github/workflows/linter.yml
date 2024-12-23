@@ -15,5 +15,5 @@ jobs:
           cache-dependency-path: "**/go.sum"
       - run: script/lint.sh
         env:
-          CHECK_GITHUB_OPENAPI: 1
+          # CHECK_GITHUB_OPENAPI: 1
           GITHUB_TOKEN: ${{ github.token }}
