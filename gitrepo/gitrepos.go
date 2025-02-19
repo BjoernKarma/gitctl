@@ -7,19 +7,17 @@ import (
 	"github.com/spf13/viper"
 )
 
-func RunGitCommand(command int, baseDirs []string) {
+func RunGitCommand(command string, baseDirs []string) {
 	allGitRepos, err := findGitReposInBaseDirs(baseDirs)
 	if err != nil {
 		log.Println(err)
 	}
 
-	var gitCommand = ConvertIntToGitCommand(command)
 	for _, gitRepo := range allGitRepos {
 		output, err := gitRepo.RunGitCommand(command)
 		if err != nil {
 			log.Println(err)
 		}
-		log.Printf("Executing %s for git repo %s \n", gitCommand, gitRepo.path)
 		fmt.Printf("%s", output)
 	}
 }

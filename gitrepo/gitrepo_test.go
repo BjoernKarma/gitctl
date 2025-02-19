@@ -18,7 +18,8 @@ const (
 
 func TestMain(m *testing.M) {
 	dirPath := "../test/microservice/.git"
-	err := os.MkdirAll(dirPath, 0755)
+	// Set directory permissions to 0700 for secure access
+	err := os.MkdirAll(dirPath, 0700)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -83,9 +84,8 @@ func TestGitRepoRunGitPull(t *testing.T) {
 
 	output, err := gitRepo.RunGitCommand(GitPull)
 
-	// Assert that there was an error and the result is nil (since the git repo is only simulated)
-	// TODO - Fix this test
-	assert.NoError(t, err)
+	// Assert that there was an error and the result is the combined output (standard out/ standard error)
+	assert.Error(t, err)
 	assert.NotNil(t, output)
 }
 
@@ -95,7 +95,7 @@ func TestGitRepoRunGitCommand(t *testing.T) {
 	testDir, _ := filepath.Abs(microserviceDirPath)
 	gitRepo := GitRepo{path: testDir}
 
-	output, err := gitRepo.RunGitCommand(-1)
+	output, err := gitRepo.RunGitCommand("hello")
 
 	// Assert that there was no error and the result is as expected
 	assert.NoError(t, err)
