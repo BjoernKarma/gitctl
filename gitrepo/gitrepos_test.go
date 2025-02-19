@@ -24,7 +24,7 @@ func TestRunGitStatus(t *testing.T) {
 func TestRunGitDefaultCommand(t *testing.T) {
 
 	// Mock inputs
-	command := -1
+	command := "hello"
 	testDir, _ := filepath.Abs(testDirPath)
 	baseDirs := []string{testDir}
 

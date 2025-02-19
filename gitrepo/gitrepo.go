@@ -9,10 +9,12 @@ import (
 	"github.com/spf13/viper"
 )
 
-const gitDirToSearch = ".git"
-const gitCommand = "git"
-const pullCommand = "pull"
-const statusCommand = "status"
+const (
+	gitDirToSearch = ".git"
+	gitCommand     = "git"
+	pullCommand    = "pull"
+	statusCommand  = "status"
+)
 
 // GitRepo represents a git repository defined with an absolute file path.
 type GitRepo struct {
@@ -21,20 +23,9 @@ type GitRepo struct {
 }
 
 const (
-	GitPull = iota
-	GitStatus
+	GitPull   = "pull"
+	GitStatus = "status"
 )
-
-func ConvertIntToGitCommand(command int) string {
-	switch command {
-	case GitPull:
-		return "git pull"
-	case GitStatus:
-		return "git status"
-	default:
-		return "git status"
-	}
-}
 
 func FindGitRepos(root string) ([]GitRepo, error) {
 	var verbose = viper.GetBool("verbose")
@@ -62,7 +53,7 @@ func FindGitRepos(root string) ([]GitRepo, error) {
 	}
 }
 
-func (gitRepo *GitRepo) RunGitCommand(command int) ([]byte, error) {
+func (gitRepo *GitRepo) RunGitCommand(command string) ([]byte, error) {
 	var verbose = viper.GetBool("verbose")
 	if gitRepo == nil || gitRepo.path == "" {
 		if verbose {
@@ -82,11 +73,17 @@ func (gitRepo *GitRepo) RunGitCommand(command int) ([]byte, error) {
 	}
 
 	cmd.Dir = gitRepo.path
-	out, err := cmd.Output()
+	out, err := cmd.CombinedOutput()
+	// Format the output with headers and separators and color
+	formattedOutput := FormatOutput(out, gitRepo.path)
 	if err != nil {
-		log.Println(err)
-		return nil, err
+		return []byte(formattedOutput), err
 	} else {
-		return out, nil
+		return []byte(formattedOutput), nil
 	}
+}
+
+func FormatOutput(output []byte, header string) string {
+	coloredOutput, color := ConvertToColoredOutput(string(output))
+	return AddHeaderToOutput(coloredOutput, header, color)
 }
