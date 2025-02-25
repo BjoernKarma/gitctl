@@ -16,16 +16,45 @@ const (
 	invalidPath         = "/path/does/not/exist"
 )
 
-func TestMain(m *testing.M) {
-	dirPath := "../test/microservice/.git"
+func createTestFilesAndFolders() {
+	dirPath := filepath.Join(microserviceDirPath, ".git")
 	// Set directory permissions to 0700 for secure access
 	err := os.MkdirAll(dirPath, 0700)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// Create a sample file in the directory
+	filePath := filepath.Join(dirPath, "service.txt")
+	err = os.WriteFile(filePath, []byte("sample content"), 0600)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func cleanupTestFilesAndFolders() {
+	// Remove the test directory and its contents
+	err := os.RemoveAll(testDirPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func TestMain(m *testing.M) {
+	// Call the setup function to create files and folders
+	createTestFilesAndFolders()
+
 	viper.Set("verbose", true)
 	// call flag.Parse() here if TestMain uses flags
-	os.Exit(m.Run())
+
+	// Run the tests
+	code := m.Run()
+
+	// Call the cleanup function
+	cleanupTestFilesAndFolders()
+
+	// Exit with the code from m.Run()
+	os.Exit(code)
 }
 
 func TestFindGitRepos(t *testing.T) {
@@ -76,8 +105,7 @@ func TestGitRepoEmptyRunGitStatus(t *testing.T) {
 	assert.Nil(t, output)
 }
 
-// TODO - Fix this test
-func DisabledTestGitRepoRunGitPull(t *testing.T) {
+func TestGitRepoRunGitPull(t *testing.T) {
 
 	// Call the function under test
 	testDir, _ := filepath.Abs(microserviceDirPath)

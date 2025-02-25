@@ -1,12 +1,14 @@
 package gitrepo
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 
-	"github.com/spf13/viper"
+	"ethical-developer/cli/gitctl/color"
+	"ethical-developer/cli/gitctl/config"
 )
 
 const (
@@ -28,18 +30,18 @@ const (
 )
 
 func FindGitRepos(root string) ([]GitRepo, error) {
-	var verbose = viper.GetBool("verbose")
+	var verbose = config.IsVerbose()
 	var repos []GitRepo
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			log.Printf("error walking the path %q: %v\n", root, err)
+			color.PrintError(fmt.Sprintf("error walking the path %q: %v\n", root, err))
 			log.Println(err)
 			return err
 		}
 		if info.IsDir() && info.Name() == gitDirToSearch {
 			gitDir := filepath.Dir(path)
 			if verbose {
-				log.Printf("found a git directory: %+v \n", gitDir)
+				color.PrintSubtleInfo(fmt.Sprintf("found a git directory: %+v", gitDir))
 			}
 			repos = append(repos, GitRepo{path: gitDir})
 			return filepath.SkipDir
@@ -54,28 +56,35 @@ func FindGitRepos(root string) ([]GitRepo, error) {
 }
 
 func (gitRepo *GitRepo) RunGitCommand(command string) ([]byte, error) {
-	var verbose = viper.GetBool("verbose")
+	var verbose = config.IsVerbose()
+	var dryRun = config.IsDryRun()
+	if dryRun {
+		message := fmt.Sprintf("Dry run enabled. Skipping git %s for repository %s", command, gitRepo.path)
+		color.PrintSubtleInfo(message)
+		return nil, nil
+	}
+
 	if gitRepo == nil || gitRepo.path == "" {
 		if verbose {
-			log.Printf("The repository path is empty. Skipping the git command.\n")
+			color.PrintInfo("The repository path is empty. Skipping the git command.")
 		}
 		return nil, nil
 	}
 
-	var cmd *exec.Cmd
+	var gitCmd *exec.Cmd
 	switch command {
 	case GitPull:
-		cmd = exec.Command(gitCommand, pullCommand)
+		gitCmd = exec.Command(gitCommand, pullCommand)
 	case GitStatus:
-		cmd = exec.Command(gitCommand, statusCommand)
+		gitCmd = exec.Command(gitCommand, statusCommand)
 	default:
-		cmd = exec.Command(gitCommand, statusCommand)
+		gitCmd = exec.Command(gitCommand, statusCommand)
 	}
 
-	cmd.Dir = gitRepo.path
-	out, err := cmd.CombinedOutput()
+	gitCmd.Dir = gitRepo.path
+	out, err := gitCmd.CombinedOutput()
 	// Format the output with headers and separators and color
-	formattedOutput := FormatOutput(out, gitRepo.path)
+	formattedOutput := FormatOutput(gitRepo.path, out)
 	if err != nil {
 		return []byte(formattedOutput), err
 	} else {
@@ -83,7 +92,6 @@ func (gitRepo *GitRepo) RunGitCommand(command string) ([]byte, error) {
 	}
 }
 
-func FormatOutput(output []byte, header string) string {
-	coloredOutput, color := ConvertToColoredOutput(string(output))
-	return AddHeaderToOutput(coloredOutput, header, color)
+func FormatOutput(header string, output []byte) string {
+	return color.ConvertToColoredMessage(header, string(output))
 }
