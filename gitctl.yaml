@@ -1,4 +1,21 @@
-base:
-  dir:
-    - "//data//dev//projects//github"
-    - "//data//dev//projects//gitlab"
+# Description: Configuration file for gitctl
+
+# Verbosity settings
+verbosity:
+  quiet: false
+  verbose: false
+  debug: true
+
+# Run mode settings
+run_mode:
+  local: true
+  dry_run: false
+  concurrency: 3
+
+# Output settings
+output:
+  color: true
+
+# Base directories for git repositories
+base_dirs:
+  - "//dev//gitctl"
