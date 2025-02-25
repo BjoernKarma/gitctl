@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRootCommandShowsHelp(t *testing.T) {
+func TestStatusCommandExecutesGitStatusOnLocalRepo(t *testing.T) {
 	var buf bytes.Buffer
 	log.SetOutput(&buf)
 	rootCmd.SetOut(&buf)
@@ -17,10 +17,10 @@ func TestRootCommandShowsHelp(t *testing.T) {
 		log.SetOutput(nil)
 	}()
 
-	rootCmd.SetArgs([]string{"--help"})
+	rootCmd.SetArgs([]string{"status", "--local", "--debug", "--verbose", "--config=gitctl.yaml"})
 	err := rootCmd.Execute()
 
-	expected := "Run git commands on multiple git repositories"
+	expected := "Configuration settings:"
 	assert.Contains(t, buf.String(), expected, "expected %v to be contained in %v", expected, buf.String())
 	assert.NoError(t, err)
 }
