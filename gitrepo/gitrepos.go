@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/spf13/viper"
+	"ethical-developer/cli/gitctl/color"
+	"ethical-developer/cli/gitctl/config"
 )
 
 func RunGitCommand(command string, baseDirs []string) {
@@ -13,22 +14,38 @@ func RunGitCommand(command string, baseDirs []string) {
 		log.Println(err)
 	}
 
+	isVerbose := config.IsVerbose()
+	isQuiet := config.IsQuiet()
+
+	if isVerbose && !isQuiet {
+		fmt.Printf("\n============ GIT OUTPUT (VERBOSE) ============\n")
+	}
 	for _, gitRepo := range allGitRepos {
 		output, err := gitRepo.RunGitCommand(command)
 		if err != nil {
 			log.Println(err)
 		}
-		fmt.Printf("%s", output)
+		if isVerbose && !isQuiet {
+			fmt.Printf("%s", output)
+		}
+
 	}
+	if isVerbose && !isQuiet {
+		fmt.Printf("\n============ GIT OUTPUT END ============\n")
+	}
+
+	// Print statistics and git output
+	color.PrintGitStatistics()
+	color.PrintGitRepoStatus()
 }
 
 func findGitReposInBaseDirs(baseDirs []string) ([]GitRepo, error) {
 	var allGitRepos []GitRepo
-	var verbose = viper.GetBool("verbose")
+	var verbose = config.IsVerbose()
 
 	for _, baseDir := range baseDirs {
 		if verbose {
-			log.Println("Searching for git repositories in : ", baseDir)
+			color.PrintInfo(fmt.Sprintf("Searching for git repositories in : %s", baseDir))
 		}
 
 		repos, err := FindGitRepos(baseDir)
@@ -36,13 +53,7 @@ func findGitReposInBaseDirs(baseDirs []string) ([]GitRepo, error) {
 			log.Println(err)
 			return nil, err
 		}
-		log.Printf("Found %d git directories in %s \n", len(repos), baseDir)
-		if verbose {
-			log.Println("Searching for git repositories in : ", baseDir)
-			for _, repo := range repos {
-				fmt.Printf("  %s\n", repo.path+",\n  ")
-			}
-		}
+		color.PrintSuccess(fmt.Sprintf("Found %d git directories in %s \n", len(repos), baseDir))
 		allGitRepos = append(allGitRepos, repos...)
 	}
 
