@@ -31,13 +31,28 @@ To install `gitctl`, follow these steps:
 
 ## Configuration
 
-Add a [`gitctl.yaml`](https://gitlab.devops.telekom.de/swe-codeshare/cli/gitctl/-/blob/e33c0905c6981f10cf057e8d7566a29da5854150/gitctl.yaml) file to your home directory (`~/.gitctl.yaml`) with the following format:
+Add a `gitctl.yaml`file the `.config\gitctl` folder in your home directory (`~/.config\gitctl\gitctl.yaml`) with the following format:
 
 ```yaml
-base:
-  dir:
-    - "C://dev//swe-codeshare"
-    - "C://dev//other-folder"
+# Verbosity settings
+verbosity:
+  quiet: false
+  verbose: false
+  debug: true
+
+# Run mode settings
+run_mode:
+  local: true
+  dry_run: false
+  concurrency: 3
+
+# Output settings
+output:
+  color: true
+
+# Base directories for git repositories
+base_dirs:
+  - "//dev//gitctl"
 ```
 
 ## Usage
