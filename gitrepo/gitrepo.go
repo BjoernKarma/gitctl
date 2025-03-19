@@ -7,8 +7,8 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"ethical-developer/cli/gitctl/color"
-	"ethical-developer/cli/gitctl/config"
+	"github.com/bjoernkarma/gitctl/color"
+	"github.com/bjoernkarma/gitctl/config"
 )
 
 const (

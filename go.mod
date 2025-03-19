@@ -1,4 +1,4 @@
-module ethical-developer/cli/gitctl
+module github.com/bjoernkarma/gitctl
 
 go 1.23.7
 
