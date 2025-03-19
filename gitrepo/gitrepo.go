@@ -82,14 +82,10 @@ func (gitRepo *GitRepo) RunGitCommand(command string) ([]byte, error) {
 	}
 
 	gitCmd.Dir = gitRepo.path
-	out, err := gitCmd.CombinedOutput()
+	out, _ := gitCmd.CombinedOutput()
 	// Format the output with headers and separators and color
 	formattedOutput := FormatOutput(gitRepo.path, out)
-	if err != nil {
-		return []byte(formattedOutput), err
-	} else {
-		return []byte(formattedOutput), nil
-	}
+	return []byte(formattedOutput), nil
 }
 
 func FormatOutput(header string, output []byte) string {

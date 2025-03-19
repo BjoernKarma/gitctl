@@ -5,6 +5,7 @@ import (
 	"log"
 	"testing"
 
+	"github.com/charmbracelet/lipgloss/tree"
 	"github.com/fatih/color"
 )
 
@@ -51,13 +52,19 @@ func TestPrintGitRepoStatus_SuccessMessages(t *testing.T) {
 		log.SetOutput(nil)
 	}()
 
-	gitSuccess = []string{"Success1", "Success2"}
-	gitInfos = []string{}
-	gitErrors = []string{}
+	gitSuccessTree = tree.New().Root(FolderIcon + "usr").
+		Child(
+			tree.New().
+				Root(FolderIcon + "dev").
+				Child(FolderIcon + "middleware"))
+	gitInfosTree = nil
+	gitErrorsTree = nil
 
 	PrintGitRepoStatus()
 
-	if !bytes.Contains(buf.Bytes(), []byte("Success1")) || !bytes.Contains(buf.Bytes(), []byte("Success2")) {
+	if !bytes.Contains(buf.Bytes(), []byte(FolderIcon+"middleware")) ||
+		!bytes.Contains(buf.Bytes(), []byte(FolderIcon+"dev")) ||
+		!bytes.Contains(buf.Bytes(), []byte(FolderIcon+"usr")) {
 		t.Errorf("expected success messages to be printed, got %v", buf.String())
 	}
 }
@@ -69,14 +76,20 @@ func TestPrintGitRepoStatus_InfoMessages(t *testing.T) {
 		log.SetOutput(nil)
 	}()
 
-	gitSuccess = []string{}
-	gitInfos = []string{"Info1", "Info2"}
-	gitErrors = []string{}
+	gitSuccessTree = nil
+	gitInfosTree = tree.New().Root(FolderIcon + "usr").
+		Child(
+			tree.New().
+				Root(FolderIcon + "dev").
+				Child(FolderIcon + "middleware"))
+	gitErrorsTree = nil
 
 	PrintGitRepoStatus()
 
-	if !bytes.Contains(buf.Bytes(), []byte("Info1")) || !bytes.Contains(buf.Bytes(), []byte("Info2")) {
-		t.Errorf("expected info messages to be printed, got %v", buf.String())
+	if !bytes.Contains(buf.Bytes(), []byte(FolderIcon+"middleware")) ||
+		!bytes.Contains(buf.Bytes(), []byte(FolderIcon+"dev")) ||
+		!bytes.Contains(buf.Bytes(), []byte(FolderIcon+"usr")) {
+		t.Errorf("expected success messages to be printed, got %v", buf.String())
 	}
 }
 
@@ -87,14 +100,20 @@ func TestPrintGitRepoStatus_ErrorMessages(t *testing.T) {
 		log.SetOutput(nil)
 	}()
 
-	gitSuccess = []string{}
-	gitInfos = []string{}
-	gitErrors = []string{"Error1", "Error2"}
+	gitSuccessTree = nil
+	gitInfosTree = nil
+	gitErrorsTree = tree.New().Root(FolderIcon + "usr").
+		Child(
+			tree.New().
+				Root(FolderIcon + "dev").
+				Child(FolderIcon + "middleware"))
 
 	PrintGitRepoStatus()
 
-	if !bytes.Contains(buf.Bytes(), []byte("Error1")) || !bytes.Contains(buf.Bytes(), []byte("Error2")) {
-		t.Errorf("expected error messages to be printed, got %v", buf.String())
+	if !bytes.Contains(buf.Bytes(), []byte(FolderIcon+"middleware")) ||
+		!bytes.Contains(buf.Bytes(), []byte(FolderIcon+"dev")) ||
+		!bytes.Contains(buf.Bytes(), []byte(FolderIcon+"usr")) {
+		t.Errorf("expected success messages to be printed, got %v", buf.String())
 	}
 }
 
@@ -105,14 +124,30 @@ func TestPrintGitRepoStatus_MixedMessages(t *testing.T) {
 		log.SetOutput(nil)
 	}()
 
-	gitSuccess = []string{"Success1"}
-	gitInfos = []string{"Info1"}
-	gitErrors = []string{"Error1"}
+	gitSuccessTree = tree.New().Root(FolderIcon + "usr").
+		Child(
+			tree.New().
+				Root(FolderIcon + "dev").
+				Child(FolderIcon + "middleware"))
+	gitInfosTree = tree.New().Root(FolderIcon + "usr").
+		Child(
+			tree.New().
+				Root(FolderIcon + "dev").
+				Child(FolderIcon + "middleware2"))
+	gitErrorsTree = tree.New().Root(FolderIcon + "usr").
+		Child(
+			tree.New().
+				Root(FolderIcon + "dev").
+				Child(FolderIcon + "middleware3"))
 
 	PrintGitRepoStatus()
 
-	if !bytes.Contains(buf.Bytes(), []byte("Success1")) || !bytes.Contains(buf.Bytes(), []byte("Info1")) || !bytes.Contains(buf.Bytes(), []byte("Error1")) {
-		t.Errorf("expected mixed messages to be printed, got %v", buf.String())
+	if !bytes.Contains(buf.Bytes(), []byte(FolderIcon+"middleware")) ||
+		!bytes.Contains(buf.Bytes(), []byte(FolderIcon+"middleware2")) ||
+		!bytes.Contains(buf.Bytes(), []byte(FolderIcon+"middleware3")) ||
+		!bytes.Contains(buf.Bytes(), []byte(FolderIcon+"dev")) ||
+		!bytes.Contains(buf.Bytes(), []byte(FolderIcon+"usr")) {
+		t.Errorf("expected success messages to be printed, got %v", buf.String())
 	}
 }
 
@@ -123,9 +158,9 @@ func TestPrintGitRepoStatus_NoMessages(t *testing.T) {
 		log.SetOutput(nil)
 	}()
 
-	gitSuccess = []string{}
-	gitInfos = []string{}
-	gitErrors = []string{}
+	gitSuccessTree = nil
+	gitInfosTree = nil
+	gitErrorsTree = nil
 
 	PrintGitRepoStatus()
 
