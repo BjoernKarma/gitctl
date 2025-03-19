@@ -1,6 +1,7 @@
 package config
 
 import (
+	"os"
 	"testing"
 
 	"github.com/spf13/viper"
@@ -110,10 +111,11 @@ func TestGetBaseDirsReturnsCorrectValueWhenLocal(t *testing.T) {
 
 func TestGetBaseDirsReturnsCorrectValueWhenNotLocal(t *testing.T) {
 	viper.Set(GitCtlLocal, false)
-	expected := []string{"dir1", "dir2"}
+	workingDir, _ := os.Getwd()
+	expected := []string{workingDir}
 	viper.Set(GitCtlBaseDirs, expected)
 	result := GetBaseDirs()
-	if len(result) != len(expected) || result[0] != expected[0] || result[1] != expected[1] {
+	if len(result) != len(expected) || result[0] != expected[0] {
 		t.Errorf("expected %v, got %v", expected, result)
 	}
 }

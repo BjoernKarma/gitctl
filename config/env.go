@@ -1,6 +1,9 @@
 package config
 
 import (
+	"os"
+	"path/filepath"
+
 	"github.com/spf13/viper"
 )
 
@@ -60,9 +63,23 @@ func GetConcurrency() string {
 
 // GetBaseDirs returns the base directories as a slice of strings
 func GetBaseDirs() []string {
+	var baseDirs []string
 	if IsLocal() {
-		return []string{GitctlWorkingDir()}
+		baseDirs = []string{GitctlWorkingDir()}
 	} else {
-		return viper.GetStringSlice(GitCtlBaseDirs)
+		baseDirs = viper.GetStringSlice(GitCtlBaseDirs)
 	}
+
+	var validPaths []string
+	for _, dir := range baseDirs {
+		absPath, err := filepath.Abs(dir)
+		if err != nil {
+			continue // Skip invalid paths
+		}
+		if _, err := os.Stat(absPath); os.IsNotExist(err) {
+			continue // Skip non-existent paths
+		}
+		validPaths = append(validPaths, absPath)
+	}
+	return validPaths
 }
