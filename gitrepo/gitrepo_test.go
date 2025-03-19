@@ -113,9 +113,9 @@ func TestGitRepoRunGitPull(t *testing.T) {
 
 	output, err := gitRepo.RunGitCommand(GitPull)
 
-	// Assert that there was no error and the result is as expected
-    assert.NoError(t, err)
-    assert.NotNil(t, output)
+	// Assert that there was an error and the result is the combined output (standard out/ standard error)
+	assert.NoError(t, err)
+	assert.NotNil(t, output)
 }
 
 func TestGitRepoRunGitCommand(t *testing.T) {

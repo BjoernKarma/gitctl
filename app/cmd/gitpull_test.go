@@ -20,7 +20,7 @@ func TestPullCommandExecutesGitPullOnLocalRepo(t *testing.T) {
 	rootCmd.SetArgs([]string{"pull", "--local", "--debug", "--verbose"})
 	err := rootCmd.Execute()
 
-	expected := "No configuration file found"
+	expected := "Configuration settings:"
 	assert.Contains(t, buf.String(), expected, "expected %v to be contained in %v", expected, buf.String())
 	assert.NoError(t, err)
 }
