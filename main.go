@@ -1,7 +1,7 @@
 package main
 
 import (
-	"ethical-developer/cli/gitctl/app/cmd"
+	"github.com/bjoernkarma/gitctl/app/cmd"
 	"log"
 )
 
