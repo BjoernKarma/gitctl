@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"ethical-developer/cli/gitctl/config"
+	"github.com/bjoernkarma/gitctl/config"
 	"log"
 
 	"github.com/pkg/errors"

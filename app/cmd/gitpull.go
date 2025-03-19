@@ -3,8 +3,8 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	"ethical-developer/cli/gitctl/config"
-	"ethical-developer/cli/gitctl/gitrepo"
+	"github.com/bjoernkarma/gitctl/config"
+	"github.com/bjoernkarma/gitctl/gitrepo"
 )
 
 var pullCmd = &cobra.Command{

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"ethical-developer/cli/gitctl/color"
-	"ethical-developer/cli/gitctl/config"
+	"github.com/bjoernkarma/gitctl/color"
+	"github.com/bjoernkarma/gitctl/config"
 )
 
 func RunGitCommand(command string, baseDirs []string) {

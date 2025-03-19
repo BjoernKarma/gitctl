@@ -6,7 +6,7 @@ import (
 
 	"github.com/fatih/color"
 
-	"ethical-developer/cli/gitctl/config"
+	"github.com/bjoernkarma/gitctl/config"
 )
 
 // PrintInfo prints yellow colored text to standard out

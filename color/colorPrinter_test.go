@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/spf13/viper"
 
-	"ethical-developer/cli/gitctl/config"
+	"github.com/bjoernkarma/gitctl/config"
 )
 
 const message = "test message"
