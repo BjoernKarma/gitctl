@@ -16,6 +16,10 @@ Currently, `gitctl` supports the following Git commands:
 
 ## Installation
 
+### Go install
+
+`go install github.com/bjoernkarma/gitctl@latest`
+
 ### Download and install manually
 
 Download the latest release for your platform from the [Releases page](https://gitlab.com/ethical-developer/cli/gitctl/-/packages/), 
@@ -24,7 +28,7 @@ then extract and move the `gitctl` binary to any place in your `$PATH`.
 ### Download and install from source
 To install `gitctl`, follow these steps:
 
-1. Clone the repository: `git clone git@gitlab.com:ethical-developer/cli/gitctl.git`
+1. Clone the repository: `git clone git@github.com:BjoernKarma/gitctl.git`
 2. Navigate to the cloned directory: `cd gitctl`
 3. Build the project: `go build`
 4. Install the CLI: `go install`
