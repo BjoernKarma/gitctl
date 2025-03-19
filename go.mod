@@ -1,6 +1,6 @@
 module ethical-developer/cli/gitctl
 
-go 1.22
+go 1.24.1
 
 require (
 	github.com/charmbracelet/lipgloss v1.0.0
