@@ -134,7 +134,7 @@ jobs:
         working-directory: ${{ inputs.module }}
         run: |
           set -euo pipefail
-          go test -json -v ./... 2>&1 | tee gotest.log | gotestfmt
+          go test -coverprofile cover.out -json -v ./... 2>&1 | tee gotest.log | gotestfmt
 
       - name: Generate HTML coverage report
         shell: bash
