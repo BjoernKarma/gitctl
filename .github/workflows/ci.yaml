@@ -20,7 +20,7 @@ jobs:
     name: gitctl
     uses: ./.github/workflows/reusable-go-ci.yaml
     with:
-      module: gitctl
+      module: .
       run_build_image: true
       run_tests: true
       ko_build_path: "main.go"
