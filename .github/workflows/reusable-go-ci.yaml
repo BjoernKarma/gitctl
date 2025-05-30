@@ -272,7 +272,7 @@ jobs:
         shell: bash
         working-directory: ${{ inputs.module }}
         env:
-          KO_DOCKER_REPO: ${{ inputs.container_registry }}/${{ inputs.github_repository }}/${{ inputs.module }}
+          KO_DOCKER_REPO: ${{ inputs.container_registry }}/${{ inputs.github_repository }}
           KO_CONFIG_PATH: ${{ github.workspace }}/.ko.yaml
         run: |
           if [ -z "${{ inputs.github_repository }}" ] || [ -z "${{ inputs.github_ref }}" ]; then
