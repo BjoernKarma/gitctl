@@ -1,0 +1,76 @@
+version: 2
+
+before:
+  hooks: []
+
+env:
+  - CGO_ENABLED=0
+  - GO111MODULE=on
+
+snapshot:
+  version_template: "SNAPSHOT-{{.ShortCommit}}"
+
+builds:
+  - id: gitctl
+    dir: .
+    main: main.go
+    binary: gitctl
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+archives:
+  - formats: [tar.gz]
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    files:
+      - LICENSE*
+      - README*
+      - CHANGELOG.md
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+release:
+  header: >-
+    # 🚀 Release {{ .Version }}
+  footer: >-
+
+    ---
+
+    ✨🎉
+
+sboms:
+  - artifacts: archive
+
+kos: 
+  - id: gitctl
+    build: gitctl
+    main: .
+    working_dir: .
+    repositories:
+      - ghcr.io/bjoernkarma/gitctl
+    labels:
+      org.opencontainers.image.version: "{{.Version}}"
+      org.opencontainers.image.revision: "{{.FullCommit}}"
+      org.opencontainers.image.licenses: "Apache-2.0"
+    user: 65532:65532
+    base_image: gcr.io/distroless/static:nonroot
+    tags:
+      - latest
+      - "{{.Tag}}"
+      - "{{if not .Prerelease}}stable{{end}}"
+    bare: true

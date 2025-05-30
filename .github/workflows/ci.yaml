@@ -1,0 +1,27 @@
+name: Run CI
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+    branches:
+      - "main"
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+  security-events: write
+  packages: write
+  actions: read
+
+jobs:
+  gitctl:
+    name: gitctl
+    uses: ./.github/workflows/reusable-go-ci.yaml
+    with:
+      module: .
+      run_build_image: true
+      run_tests: true
+      image_ref: "ghcr.io/bjoernkarma/gitctl"
+      ko_build_path: "main.go"
