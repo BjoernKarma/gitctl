@@ -21,7 +21,7 @@ jobs:
     uses: ./.github/workflows/reusable-go-ci.yaml
     with:
       module: .
-      github_repository: "bjoernkarma/gitctl"
       run_build_image: true
       run_tests: true
+      image_ref: "ghcr.io/bjoernkarma/gitctl"
       ko_build_path: "main.go"

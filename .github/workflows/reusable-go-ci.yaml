@@ -27,6 +27,11 @@ on:
         required: false
         type: boolean
         default: ${{ github.event_name == 'pull_request' }}
+      run_code_analysis:
+        description: "Set to true to run CodeQL analysis"
+        required: false
+        type: boolean
+        default: ${{ github.event_name == 'pull_request' }}
       run_lint:
         description: "Set to true to run golangci-lint"
         required: false
@@ -47,6 +52,11 @@ on:
         required: false
         type: string
         default: "ghcr.io"
+      image_ref:
+        description: "Container image reference for Ko. If not provided, defaults to container_registry/github_repository/module."
+        required: false
+        type: string
+        default: ${{ inputs.container_registry }}/${{ inputs.github_repository }}/${{ inputs.module }}
       image_tags:
         description: "Comma-separated list of tags to apply to the built image. If empty, GITHUB_REF_SLUG will be used."
         required: false
@@ -61,7 +71,7 @@ on:
 jobs:
   static_checks:
     name: "Static Checks for ${{ inputs.module }}"
-    if: ${{ inputs.run_lint || inputs.run_check_generated_files }}
+    if: ${{ inputs.run_lint }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -232,6 +242,58 @@ jobs:
           go-package: ./...
           work-dir: ${{ inputs.module }}
 
+  codeql:
+    name: "CodeQL Analysis for ${{ inputs.module }}"
+    if: ${{ inputs.run_code_analysis }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # pin@v2.7.0
+        with:
+          fetch-depth: 0 # CodeQL requires full history
+
+      - name: Setup Go
+        uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # pin@5.5.0
+        with:
+          go-version-file: "${{ inputs.module }}/go.mod"
+          cache: false
+
+      - name: Restore Go Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ inputs.module }}-${{ hashFiles(format('{0}/go.sum', inputs.module)) }}
+          restore-keys: |
+            ${{ runner.os }}-go-${{ inputs.module }}-
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@ff0a06e83cb2de871e5a09832bc6a81e7276941f # pinv3.28.18
+        with:
+          languages: go
+          build-mode: manual # Set to manual as we provide a build step
+
+      - name: Build module for CodeQL
+        shell: bash
+        working-directory: ${{ inputs.module }}
+        run: |
+          echo "Attempting to build ${{ inputs.module }} for CodeQL analysis..."
+          if [ -f Makefile ] && grep -q -E "^build[:[:space:]]" Makefile; then
+            echo "Found Makefile with build target. Running make build..."
+            make build
+          elif [ -f go.mod ]; then
+            echo "Found go.mod. Running go build ./..."
+            go build ./...
+          else
+            echo "WARNING: No Makefile with a 'build' target or go.mod found in ${{ inputs.module }}. CodeQL may not analyze effectively."
+          fi
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@ff0a06e83cb2de871e5a09832bc6a81e7276941f # pinv3.28.18
+        with:
+          category: "/language:go"
+
   build:
     name: "Build Image for ${{ inputs.module }}"
     if: ${{ inputs.run_build_image && (needs.static_checks.result != 'failure') && (needs.tests.result != 'failure') }}
@@ -272,7 +334,7 @@ jobs:
         shell: bash
         working-directory: ${{ inputs.module }}
         env:
-          KO_DOCKER_REPO: ${{ inputs.container_registry }}/${{ inputs.github_repository }}
+          KO_DOCKER_REPO: ${{ inputs.image_ref }}
           KO_CONFIG_PATH: ${{ github.workspace }}/.ko.yaml
         run: |
           if [ -z "${{ inputs.github_repository }}" ] || [ -z "${{ inputs.github_ref }}" ]; then
@@ -303,7 +365,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.30.0
         with:
-          image-ref: ${{ inputs.container_registry }}/${{ inputs.github_repository }}@${{ needs.build.outputs.image_digest }}
+          image-ref: ${{ inputs.image_ref }}@${{ needs.build.outputs.image_digest }}
           exit-code: "1"
           vuln-type: "os,library"
           severity: "CRITICAL,HIGH"
