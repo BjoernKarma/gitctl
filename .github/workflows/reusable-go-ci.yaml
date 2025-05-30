@@ -303,7 +303,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.30.0
         with:
-          image-ref: ${{ inputs.container_registry }}/${{ inputs.github_repository }}/${{ inputs.module }}@${{ needs.build.outputs.image_digest }}
+          image-ref: ${{ inputs.container_registry }}/${{ inputs.github_repository }}@${{ needs.build.outputs.image_digest }}
           exit-code: "1"
           vuln-type: "os,library"
           severity: "CRITICAL,HIGH"
