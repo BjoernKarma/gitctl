@@ -80,7 +80,7 @@ jobs:
           fetch-depth: ${{ inputs.run_code_analysis && 0 || 1 }}
 
       - name: Setup Go
-        uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # pin@6.0.0
+        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # pin@6.1.0
         with:
           go-version-file: "${{ inputs.module }}/go.mod"
           cache: false # Using a separate cache step
@@ -116,7 +116,7 @@ jobs:
           fetch-depth: ${{ inputs.run_code_analysis && 0 || 1 }}
 
       - name: Setup Go
-        uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # pin@6.0.0
+        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # pin@6.1.0
         with:
           go-version-file: "${{ inputs.module }}/go.mod"
           cache: false # Using a separate cache step
@@ -221,7 +221,7 @@ jobs:
           fetch-depth: ${{ inputs.run_code_analysis && 0 || 1 }}
 
       - name: Setup Go
-        uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # pin@6.0.0
+        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # pin@6.1.0
         with:
           go-version-file: "${{ inputs.module }}/go.mod"
           cache: false
@@ -253,7 +253,7 @@ jobs:
           fetch-depth: 0 # CodeQL requires full history
 
       - name: Setup Go
-        uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # pin@6.0.0
+        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # pin@6.1.0
         with:
           go-version-file: "${{ inputs.module }}/go.mod"
           cache: false
@@ -308,7 +308,7 @@ jobs:
           fetch-depth: ${{ inputs.run_code_analysis && 0 || 1 }}
 
       - name: Setup Go
-        uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # pin@6.0.0
+        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # pin@6.1.0
         with:
           go-version-file: "${{ inputs.module }}/go.mod"
           cache: false
