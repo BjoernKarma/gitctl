@@ -219,6 +219,7 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # pin@v6.0.1
         with:
           fetch-depth: ${{ inputs.run_code_analysis && 0 || 1 }}
+          persist-credentials: false
 
       - name: Setup Go
         uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # pin@6.1.0
