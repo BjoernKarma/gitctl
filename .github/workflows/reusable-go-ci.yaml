@@ -342,13 +342,16 @@ jobs:
         shell: bash
         working-directory: ${{ inputs.module }}
         env:
-          KO_DOCKER_REPO: ${{ inputs.container_registry }}/${{ toLower(inputs.github_repository) }}
           KO_CONFIG_PATH: ${{ github.workspace }}/.ko.yaml
         run: |
           if [ -z "${{ inputs.github_repository }}" ] || [ -z "${{ inputs.github_ref }}" ]; then
             echo "Error: github_repository and github_ref inputs are required when run_build_image is true."
             exit 1
           fi
+
+          # Convert repository name to lowercase for registry
+          REPO_LOWER=$(echo "${{ inputs.github_repository }}" | tr '[:upper:]' '[:lower:]')
+          export KO_DOCKER_REPO="${{ inputs.container_registry }}/${REPO_LOWER}"
 
           effective_tags=""
           if [ -n "${{ inputs.image_tags }}" ]; then
@@ -358,6 +361,7 @@ jobs:
           fi
 
           echo "Building with tags: $effective_tags"
+          echo "Using KO_DOCKER_REPO: ${KO_DOCKER_REPO}"
           export VERSION=$(git describe --tags --always --dirty || echo 'develop')
           export BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
@@ -365,6 +369,7 @@ jobs:
           echo "Ko output: $output"
           digest=$(echo "$output" | grep -o 'sha256:[a-f0-9]\{64\}')
           echo "digest=$digest" >> $GITHUB_OUTPUT
+          echo "image_ref=${KO_DOCKER_REPO}@${digest}" >> $GITHUB_OUTPUT
 
   image_scan:
     name: "Image Vulnerability Scan for ${{ inputs.name }}"
@@ -372,11 +377,17 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     steps:
-      # No checkout or Go setup needed if only running Trivy on a remote image
+      - name: Convert repository name to lowercase
+        id: repo_lower
+        shell: bash
+        run: |
+          REPO_LOWER=$(echo "${{ inputs.github_repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "repo=${REPO_LOWER}" >> $GITHUB_OUTPUT
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.33.1
         with:
-          image-ref: ${{ inputs.container_registry }}/${{ toLower(inputs.github_repository) }}@${{ needs.build.outputs.image_digest }}
+          image-ref: ${{ inputs.container_registry }}/${{ steps.repo_lower.outputs.repo }}@${{ needs.build.outputs.image_digest }}
           exit-code: "1"
           vuln-type: "os,library"
           severity: "CRITICAL,HIGH"
