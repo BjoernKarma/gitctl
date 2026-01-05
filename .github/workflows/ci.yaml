@@ -3,9 +3,11 @@ name: Run CI
 on:
   workflow_dispatch:
   push:
-  pull_request:
     branches:
       - "main"
+    tags:
+      - 'v*'
+  pull_request:
 
 permissions:
   contents: read
@@ -20,8 +22,6 @@ jobs:
     name: gitctl
     uses: ./.github/workflows/reusable-go-ci.yaml
     with:
+      name: gitctl
       module: .
-      run_build_image: true
-      run_tests: true
-      image_ref: "ghcr.io/bjoernkarma/gitctl"
       ko_build_path: "main.go"
