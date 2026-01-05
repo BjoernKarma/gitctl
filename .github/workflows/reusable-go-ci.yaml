@@ -108,7 +108,7 @@ jobs:
           args: --timeout 5m --issues-exit-code=0 --config .golangci.yml
 
   tests:
-    name: "Tests & Coverage for ${{ inputs.module }}"
+    name: "Tests & Coverage for ${{ inputs.name }}"
     if: ${{ inputs.run_tests }}
     runs-on: ubuntu-latest
     outputs:
@@ -211,11 +211,11 @@ jobs:
         if: ${{ always() && (github.event_name == 'pull_request') }}
         uses: marocchino/sticky-pull-request-comment@v2
         with:
-          header: module-coverage-${{ inputs.module }}
+          header: module-coverage-${{ inputs.name }}
           message: |
-            **Coverage for ${{ inputs.module }}**
+            **Coverage for ${{ inputs.name }}**
             ${{ steps.prepare_coverage_comment_step.outputs.markdown }}
-            Download the latest HTML coverage report for ${{ inputs.module }} [here](${{ github.server_url }}/${{ inputs.github_repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.upload_test_reports_artifact_step.outputs.artifact-id }}).
+            Download the latest HTML coverage report for ${{ inputs.name }} [here](${{ github.server_url }}/${{ inputs.github_repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.upload_test_reports_artifact_step.outputs.artifact-id }}).
 
   source_scan:
     name: "Source Vulnerability Scan for ${{ inputs.name }}"
@@ -342,7 +342,7 @@ jobs:
         shell: bash
         working-directory: ${{ inputs.module }}
         env:
-          KO_DOCKER_REPO: ${{ inputs.container_registry }}/${{ inputs.github_repository }}/${{ inputs.name }}
+          KO_DOCKER_REPO: ${{ inputs.container_registry }}/${{ inputs.github_repository }}
           KO_CONFIG_PATH: ${{ github.workspace }}/.ko.yaml
         run: |
           if [ -z "${{ inputs.github_repository }}" ] || [ -z "${{ inputs.github_ref }}" ]; then
