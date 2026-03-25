@@ -361,6 +361,7 @@ jobs:
           fi
 
           echo "Building with tags: $effective_tags"
+          echo "Using KO_DOCKER_REPO: ${KO_DOCKER_REPO}"
           export VERSION=$(git describe --tags --always --dirty || echo 'develop')
           export BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
@@ -386,7 +387,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
         with:
-          image-ref: ${{ inputs.container_registry }}/${{ inputs.github_repository }}/${{ inputs.name }}@${{ needs.build.outputs.image_digest }}
+          image-ref: ${{ inputs.container_registry }}/${{ steps.repo_lower.outputs.repo }}@${{ needs.build.outputs.image_digest }}
           exit-code: "1"
           vuln-type: "os,library"
           severity: "CRITICAL,HIGH"
