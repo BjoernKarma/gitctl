@@ -1,6 +1,6 @@
 module github.com/bjoernkarma/gitctl
 
-go 1.24.13
+go 1.26.1
 
 require (
 	github.com/charmbracelet/lipgloss v1.1.0
