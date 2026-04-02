@@ -54,7 +54,7 @@ func TestCommandReturnsErrorForInvalidConfigFile(t *testing.T) {
 func TestInitConfigReadsUnderscoreEnvVars(t *testing.T) {
 	viper.Reset()
 	configFile = ""
-	t.Setenv("RUN_MODE_LOCAL", "true")
+	t.Setenv("GITCTL_RUN_MODE_LOCAL", "true")
 
 	err := InitConfig()
 
@@ -64,3 +64,18 @@ func TestInitConfigReadsUnderscoreEnvVars(t *testing.T) {
 	configFile = ""
 	viper.Reset()
 }
+
+func TestInitConfigReadsPrefixedVerbosityEnvVars(t *testing.T) {
+	viper.Reset()
+	configFile = ""
+	t.Setenv("GITCTL_VERBOSITY_VERBOSE", "true")
+
+	err := InitConfig()
+
+	assert.NoError(t, err)
+	assert.True(t, config.IsVerbose())
+
+	configFile = ""
+	viper.Reset()
+}
+

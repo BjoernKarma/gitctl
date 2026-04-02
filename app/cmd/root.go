@@ -73,13 +73,24 @@ func InitConfig() error {
 		// Use config file from the flag.
 		viper.SetConfigFile(configFile)
 	} else {
+		workingDir, err := config.GitctlWorkingDir()
+		if err != nil {
+			return errors.Wrap(err, "failed to determine working directory")
+		}
+
+		configDir, err := config.GitctlConfigDir()
+		if err != nil {
+			return errors.Wrap(err, "failed to determine config directory")
+		}
+
 		viper.SetConfigName("gitctl")
 		viper.SetConfigType("yaml")
-		viper.AddConfigPath(config.GitctlWorkingDir())
-		viper.AddConfigPath(config.GitctlConfigDir())
+		viper.AddConfigPath(workingDir)
+		viper.AddConfigPath(configDir)
 	}
 
 	// Enable reading from environment variables
+	viper.SetEnvPrefix("GITCTL")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
 
