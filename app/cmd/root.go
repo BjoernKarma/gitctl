@@ -1,8 +1,10 @@
 package cmd
 
 import (
-	"github.com/bjoernkarma/gitctl/config"
 	"log"
+	"strings"
+
+	"github.com/bjoernkarma/gitctl/config"
 
 	"github.com/pkg/errors"
 
@@ -38,7 +40,9 @@ func Execute() error {
 }
 
 func init() {
-	cobra.OnInitialize(InitConfig)
+	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+		return InitConfig()
+	}
 
 	rootCmd.PersistentFlags().StringVar(&configFile, "config", "", "config file (default is $HOME/.config/gitctl.yaml)")
 	rootCmd.PersistentFlags().BoolVarP(&quiet, "quiet", "q", false, "suppress output")
@@ -64,7 +68,7 @@ func init() {
 	rootCmd.AddCommand(pullCmd)
 }
 
-func InitConfig() {
+func InitConfig() error {
 	if configFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(configFile)
@@ -76,6 +80,7 @@ func InitConfig() {
 	}
 
 	// Enable reading from environment variables
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
 
 	// Read the configuration file
@@ -83,7 +88,9 @@ func InitConfig() {
 		var configFileNotFoundError viper.ConfigFileNotFoundError
 		if errors.As(err, &configFileNotFoundError) {
 			log.Println("No configuration file found, using defaults and environment variables")
+			return nil
 		}
+		return errors.Wrap(err, "failed to read configuration file")
 	} else {
 		log.Printf("Using configuration file: %s", viper.ConfigFileUsed())
 	}
@@ -92,4 +99,6 @@ func InitConfig() {
 	if config.IsDebug() {
 		log.Printf("Configuration settings: %v", viper.AllSettings())
 	}
+
+	return nil
 }

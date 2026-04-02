@@ -10,11 +10,12 @@ import (
 
 func TestPullCommandExecutesGitPullOnLocalRepo(t *testing.T) {
 	var buf bytes.Buffer
+	originalLogWriter := log.Writer()
 	log.SetOutput(&buf)
 	rootCmd.SetOut(&buf)
 	rootCmd.SetErr(&buf)
 	defer func() {
-		log.SetOutput(nil)
+		log.SetOutput(originalLogWriter)
 	}()
 
 	rootCmd.SetArgs([]string{"pull", "--local", "--debug", "--verbose"})

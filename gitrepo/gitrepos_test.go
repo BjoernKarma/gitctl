@@ -4,62 +4,60 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/bjoernkarma/gitctl/config"
 )
 
 func TestRunGitStatus(t *testing.T) {
+	viper.Reset()
+	t.Cleanup(viper.Reset)
+	viper.Set(config.GitCtlDryRun, true)
 
-	// Mock inputs
 	command := GitStatus
 	testDir, _ := filepath.Abs(testDirPath)
 	baseDirs := []string{testDir}
 
-	// Call the function under test
-	RunGitCommand(command, baseDirs)
-
-	// Since RunGitCommand doesn't return anything, we can't make assertions about its return value.
-	// We could potentially check for side effects (like changes to global state), but without more information, it's hard to say what to check.
+	err := RunGitCommand(command, baseDirs)
+	assert.NoError(t, err)
 }
 
 func TestRunGitDefaultCommand(t *testing.T) {
+	viper.Reset()
+	t.Cleanup(viper.Reset)
+	viper.Set(config.GitCtlDryRun, true)
 
-	// Mock inputs
 	command := "hello"
 	testDir, _ := filepath.Abs(testDirPath)
 	baseDirs := []string{testDir}
 
-	// Call the function under test
-	RunGitCommand(command, baseDirs)
-
-	// Since RunGitCommand doesn't return anything, we can't make assertions about its return value.
-	// We could potentially check for side effects (like changes to global state), but without more information, it's hard to say what to check.
+	err := RunGitCommand(command, baseDirs)
+	assert.NoError(t, err)
 }
 
 func TestRunGitStatusInvalidBaseDirs(t *testing.T) {
+	viper.Reset()
+	t.Cleanup(viper.Reset)
 
-	// Mock inputs
 	command := GitStatus
 	baseDirs := []string{invalidPath}
 
-	// Call the function under test
-	RunGitCommand(command, baseDirs)
-
-	// Since RunGitCommand doesn't return anything, we can't make assertions about its return value.
-	// We could potentially check for side effects (like changes to global state), but without more information, it's hard to say what to check.
+	err := RunGitCommand(command, baseDirs)
+	assert.Error(t, err)
 }
 
 func TestRunGitPull(t *testing.T) {
+	viper.Reset()
+	t.Cleanup(viper.Reset)
+	viper.Set(config.GitCtlDryRun, true)
 
-	// Mock inputs
 	command := GitPull
 	testDir, _ := filepath.Abs(testDirPath)
 	baseDirs := []string{testDir}
 
-	// Call the function under test
-	RunGitCommand(command, baseDirs)
-
-	// Since RunGitCommand doesn't return anything, we can't make assertions about its return value.
-	// We could potentially check for side effects (like changes to global state), but without more information, it's hard to say what to check.
+	err := RunGitCommand(command, baseDirs)
+	assert.NoError(t, err)
 }
 
 func TestFindGitReposInBaseDirs(t *testing.T) {

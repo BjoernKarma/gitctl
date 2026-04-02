@@ -130,3 +130,12 @@ func TestGitRepoRunGitCommand(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, output)
 }
+
+func TestGitRepoRunGitStatusWithInvalidRepoPathReturnsError(t *testing.T) {
+	gitRepo := GitRepo{path: invalidPath}
+
+	output, err := gitRepo.RunGitCommand(GitStatus)
+
+	assert.Error(t, err)
+	assert.NotNil(t, output)
+}

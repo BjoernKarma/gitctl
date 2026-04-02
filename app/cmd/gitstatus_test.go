@@ -10,14 +10,15 @@ import (
 
 func TestStatusCommandExecutesGitStatusOnLocalRepo(t *testing.T) {
 	var buf bytes.Buffer
+	originalLogWriter := log.Writer()
 	log.SetOutput(&buf)
 	rootCmd.SetOut(&buf)
 	rootCmd.SetErr(&buf)
 	defer func() {
-		log.SetOutput(nil)
+		log.SetOutput(originalLogWriter)
 	}()
 
-	rootCmd.SetArgs([]string{"status", "--local", "--debug", "--verbose", "--config=gitctl.yaml"})
+	rootCmd.SetArgs([]string{"status", "--local", "--debug", "--verbose"})
 	err := rootCmd.Execute()
 
 	expected := "Configuration settings:"

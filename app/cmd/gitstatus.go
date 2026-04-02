@@ -10,7 +10,7 @@ import (
 var statusCmd = &cobra.Command{
 	Use:   "status",
 	Short: "Execute git status on multiple git repositories.",
-	Run: func(cmd *cobra.Command, args []string) {
-		gitrepo.RunGitCommand(gitrepo.GitStatus, config.GetBaseDirs())
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return gitrepo.RunGitCommand(gitrepo.GitStatus, config.GetBaseDirs())
 	},
 }
