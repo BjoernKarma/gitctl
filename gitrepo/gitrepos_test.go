@@ -99,4 +99,3 @@ func TestRunGitCommandAggregatesErrorsFromInvalidAndValidBaseDirs(t *testing.T) 
 	assert.Error(t, err)
 	assert.True(t, strings.Contains(err.Error(), "failed to find repositories"))
 }
-

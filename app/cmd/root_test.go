@@ -78,4 +78,3 @@ func TestInitConfigReadsPrefixedVerbosityEnvVars(t *testing.T) {
 	configFile = ""
 	viper.Reset()
 }
-
