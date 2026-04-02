@@ -10,6 +10,7 @@ import (
 
 func TestStatusCommandExecutesGitStatusOnLocalRepo(t *testing.T) {
 	var buf bytes.Buffer
+	t.Setenv("GITCTL_VERBOSITY_DEBUG", "true")
 	originalLogWriter := log.Writer()
 	log.SetOutput(&buf)
 	rootCmd.SetOut(&buf)
