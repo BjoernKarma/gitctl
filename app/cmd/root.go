@@ -99,9 +99,9 @@ func InitConfig() error {
 		var configFileNotFoundError viper.ConfigFileNotFoundError
 		if errors.As(err, &configFileNotFoundError) {
 			log.Println("No configuration file found, using defaults and environment variables")
-			return nil
+		} else {
+			return errors.Wrap(err, "failed to read configuration file")
 		}
-		return errors.Wrap(err, "failed to read configuration file")
 	} else {
 		log.Printf("Using configuration file: %s", viper.ConfigFileUsed())
 	}
