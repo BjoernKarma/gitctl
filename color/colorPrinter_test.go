@@ -14,7 +14,7 @@ import (
 
 const message = "test message"
 
-func expectMessageIsPrinted(t *testing.T, buf bytes.Buffer, message string) {
+func expectMessageIsPrinted(t *testing.T, buf bytes.Buffer) {
 	if !bytes.Contains(buf.Bytes(), []byte(message)) {
 		t.Errorf("expected test message to be printed, got %v", buf.String())
 	}
@@ -62,7 +62,7 @@ func TestPrintInfo_ColoredOutput(t *testing.T) {
 	viper.Set(config.GitCtlColor, true)
 	PrintInfo(message)
 
-	expectMessageIsPrinted(t, buf, message)
+	expectMessageIsPrinted(t, buf)
 }
 
 func TestPrintInfo_NonColoredOutput(t *testing.T) {
@@ -76,7 +76,7 @@ func TestPrintInfo_NonColoredOutput(t *testing.T) {
 	viper.Set(config.GitCtlColor, false)
 	PrintInfo(message)
 
-	expectMessageIsPrinted(t, buf, message)
+	expectMessageIsPrinted(t, buf)
 }
 
 func TestPrintSubtleInfo_QuietMode(t *testing.T) {
@@ -103,7 +103,7 @@ func TestPrintSubtleInfo_ColoredOutput(t *testing.T) {
 	viper.Set(config.GitCtlColor, true)
 	PrintSubtleInfo(message)
 
-	expectMessageIsPrinted(t, buf, message)
+	expectMessageIsPrinted(t, buf)
 }
 
 func TestPrintSubtleInfo_NonColoredOutput(t *testing.T) {
@@ -117,7 +117,7 @@ func TestPrintSubtleInfo_NonColoredOutput(t *testing.T) {
 	viper.Set(config.GitCtlColor, false)
 	PrintSubtleInfo(message)
 
-	expectMessageIsPrinted(t, buf, message)
+	expectMessageIsPrinted(t, buf)
 }
 
 func TestPrintSuccess_ColoredOutput(t *testing.T) {
@@ -131,7 +131,7 @@ func TestPrintSuccess_ColoredOutput(t *testing.T) {
 	viper.Set(config.GitCtlColor, true)
 	PrintSuccess(message)
 
-	expectMessageIsPrinted(t, buf, message)
+	expectMessageIsPrinted(t, buf)
 }
 
 func TestPrintSuccess_NonColoredOutput(t *testing.T) {
@@ -145,7 +145,7 @@ func TestPrintSuccess_NonColoredOutput(t *testing.T) {
 	viper.Set(config.GitCtlColor, false)
 	PrintSuccess(message)
 
-	expectMessageIsPrinted(t, buf, message)
+	expectMessageIsPrinted(t, buf)
 }
 
 func TestPrintError_ColoredOutput(t *testing.T) {
@@ -159,7 +159,7 @@ func TestPrintError_ColoredOutput(t *testing.T) {
 	viper.Set(config.GitCtlColor, true)
 	PrintError(message)
 
-	expectMessageIsPrinted(t, buf, message)
+	expectMessageIsPrinted(t, buf)
 }
 
 func TestPrintError_NonColoredOutput(t *testing.T) {
@@ -173,7 +173,7 @@ func TestPrintError_NonColoredOutput(t *testing.T) {
 	viper.Set(config.GitCtlColor, false)
 	PrintError(message)
 
-	expectMessageIsPrinted(t, buf, message)
+	expectMessageIsPrinted(t, buf)
 }
 
 // Simulating an error when writing to the output

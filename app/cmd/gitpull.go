@@ -10,7 +10,11 @@ import (
 var pullCmd = &cobra.Command{
 	Use:   "pull",
 	Short: "Execute git pull on multiple git repositories.",
-	Run: func(cmd *cobra.Command, args []string) {
-		gitrepo.RunGitCommand(gitrepo.GitPull, config.GetBaseDirs())
+	RunE: func(cmd *cobra.Command, args []string) error {
+		baseDirs, err := config.GetBaseDirs()
+		if err != nil {
+			return err
+		}
+		return gitrepo.RunGitCommand(gitrepo.GitPull, baseDirs)
 	},
 }
