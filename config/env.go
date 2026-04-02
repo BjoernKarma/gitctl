@@ -62,10 +62,14 @@ func GetConcurrency() string {
 }
 
 // GetBaseDirs returns the base directories as a slice of strings
-func GetBaseDirs() []string {
+func GetBaseDirs() ([]string, error) {
 	var baseDirs []string
 	if IsLocal() {
-		baseDirs = []string{GitctlWorkingDir()}
+		workingDir, err := GitctlWorkingDir()
+		if err != nil {
+			return nil, err
+		}
+		baseDirs = []string{workingDir}
 	} else {
 		baseDirs = viper.GetStringSlice(GitCtlBaseDirs)
 	}
@@ -81,5 +85,5 @@ func GetBaseDirs() []string {
 		}
 		validPaths = append(validPaths, absPath)
 	}
-	return validPaths
+	return validPaths, nil
 }

@@ -35,7 +35,14 @@ To install `gitctl`, follow these steps:
 
 ## Configuration
 
-Add a `gitctl.yaml`file the `.config\gitctl` folder in your home directory (`~/.config\gitctl\gitctl.yaml`) with the following format:
+`gitctl` searches for `gitctl.yaml` in this order:
+
+1. Current working directory
+2. `~/.config/gitctl/`
+
+You can also pass an explicit file with `--config /path/to/gitctl.yaml`.
+
+Create `~/.config/gitctl/gitctl.yaml` with the following format:
 
 ```yaml
 # Verbosity settings
@@ -58,6 +65,26 @@ output:
 base_dirs:
   - "//dev//gitctl"
 ```
+
+### Environment Variables
+
+Environment variables use the `GITCTL_` prefix. Dots in config keys are mapped to underscores.
+
+Examples:
+
+- `verbosity.verbose` -> `GITCTL_VERBOSITY_VERBOSE`
+- `run_mode.local` -> `GITCTL_RUN_MODE_LOCAL`
+- `run_mode.dry_run` -> `GITCTL_RUN_MODE_DRY_RUN`
+- `output.color` -> `GITCTL_OUTPUT_COLOR`
+
+### Precedence
+
+Configuration values are resolved in this order (highest to lowest):
+
+1. CLI flags
+2. Environment variables
+3. Config file
+4. Built-in defaults
 
 ## Usage
 
@@ -88,11 +115,17 @@ Available Commands:
   status      Execute git status on multiple git repositories.
 
 Flags:
-      --config string   config file (default is $HOME/gitctl.yaml)
+      --config string   config file (default search: ./gitctl.yaml, then ~/.config/gitctl/gitctl.yaml)
   -h, --help            help for gitctl
+  -q, --quiet           suppress output
   -v, --verbose         verbose output
+  -d, --debug           debug output
+  -l, --local           run with working directory used as base directory
+  -D, --dryRun          run with dry run mode
+  -c, --color           color output (default true)
+  -C, --concurrency     number of concurrent operations (default "1")
+      --base.dirs       base directories for git repositories
       --version         version for gitctl
-      --viper           use Viper for configuration (default true)
 
 Use "gitctl [command] --help" for more information about a command.
 ```

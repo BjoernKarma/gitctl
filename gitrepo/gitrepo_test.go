@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/spf13/viper"
@@ -113,9 +114,10 @@ func TestGitRepoRunGitPull(t *testing.T) {
 
 	output, err := gitRepo.RunGitCommand(GitPull)
 
-	// Assert that there was an error and the result is the combined output (standard out/ standard error)
-	assert.NoError(t, err)
+	// Pull should propagate git subprocess failures while still returning formatted output.
+	assert.Error(t, err)
 	assert.NotNil(t, output)
+	assert.True(t, strings.Contains(err.Error(), "git pull failed"))
 }
 
 func TestGitRepoRunGitCommand(t *testing.T) {
@@ -128,5 +130,14 @@ func TestGitRepoRunGitCommand(t *testing.T) {
 
 	// Assert that there was no error and the result is as expected
 	assert.NoError(t, err)
+	assert.NotNil(t, output)
+}
+
+func TestGitRepoRunGitStatusWithInvalidRepoPathReturnsError(t *testing.T) {
+	gitRepo := GitRepo{path: invalidPath}
+
+	output, err := gitRepo.RunGitCommand(GitStatus)
+
+	assert.Error(t, err)
 	assert.NotNil(t, output)
 }

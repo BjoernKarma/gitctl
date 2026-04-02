@@ -58,13 +58,18 @@ func FindGitRepos(root string) ([]GitRepo, error) {
 func (gitRepo *GitRepo) RunGitCommand(command string) ([]byte, error) {
 	var verbose = config.IsVerbose()
 	var dryRun = config.IsDryRun()
+	repoPath := ""
+	if gitRepo != nil {
+		repoPath = gitRepo.path
+	}
+
 	if dryRun {
-		message := fmt.Sprintf("Dry run enabled. Skipping git %s for repository %s", command, gitRepo.path)
+		message := fmt.Sprintf("Dry run enabled. Skipping git %s for repository %s", command, repoPath)
 		color.PrintSubtleInfo(message)
 		return nil, nil
 	}
 
-	if gitRepo == nil || gitRepo.path == "" {
+	if gitRepo == nil || repoPath == "" {
 		if verbose {
 			color.PrintInfo("The repository path is empty. Skipping the git command.")
 		}
@@ -81,10 +86,13 @@ func (gitRepo *GitRepo) RunGitCommand(command string) ([]byte, error) {
 		gitCmd = exec.Command(gitCommand, statusCommand)
 	}
 
-	gitCmd.Dir = gitRepo.path
-	out, _ := gitCmd.CombinedOutput()
+	gitCmd.Dir = repoPath
+	out, err := gitCmd.CombinedOutput()
 	// Format the output with headers and separators and color
-	formattedOutput := FormatOutput(gitRepo.path, out)
+	formattedOutput := FormatOutput(repoPath, out)
+	if err != nil {
+		return []byte(formattedOutput), fmt.Errorf("git %s failed for %s: %w", command, repoPath, err)
+	}
 	return []byte(formattedOutput), nil
 }
 

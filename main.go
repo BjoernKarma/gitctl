@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/bjoernkarma/gitctl/app/cmd"
 	"log"
+
+	"github.com/bjoernkarma/gitctl/app/cmd"
 )
 
 func main() {

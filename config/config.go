@@ -1,27 +1,32 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 )
 
 // GitctlWorkingDir returns the current gitctl working directory path
-func GitctlWorkingDir() string {
+func GitctlWorkingDir() (string, error) {
 	workingDir, err := os.Getwd()
 	if err != nil {
-		log.Fatalf("Error trying to find working directory due to %s", err)
+		return "", fmt.Errorf("error trying to find working directory: %w", err)
 	}
-	return workingDir
+	return workingDir, nil
 }
 
 // GitctlConfigDir returns the gitctl config directory path
-func GitctlConfigDir() string {
-	return filepath.Join(HomeDir(), ".config", "gitctl")
+func GitctlConfigDir() (string, error) {
+	homeDir, err := HomeDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(homeDir, ".config", "gitctl"), nil
 }
 
 // HomeDir finds the users home directory
-func HomeDir() string {
+func HomeDir() (string, error) {
 	// Find home directory.
 	var home string
 	home = os.Getenv("HOME")
@@ -35,10 +40,13 @@ func HomeDir() string {
 		}
 	} else {
 		info, err := os.Stat(home)
-		if err != nil || !info.IsDir() {
-			log.Fatalf("The path %s is not a valid directory", home)
+		if err != nil {
+			return "", fmt.Errorf("failed to stat home directory %s: %w", home, err)
+		}
+		if !info.IsDir() {
+			return "", fmt.Errorf("the path %s is not a valid directory", home)
 		}
 	}
 
-	return home
+	return home, nil
 }

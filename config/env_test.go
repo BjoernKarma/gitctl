@@ -101,20 +101,34 @@ func TestGetConcurrencyReturnsCorrectValue(t *testing.T) {
 }
 
 func TestGetBaseDirsReturnsCorrectValueWhenLocal(t *testing.T) {
+	viper.Reset()
+	t.Cleanup(viper.Reset)
 	viper.Set(GitCtlLocal, true)
-	expected := []string{GitctlWorkingDir()}
-	result := GetBaseDirs()
+	workingDir, err := GitctlWorkingDir()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	expected := []string{workingDir}
+	result, getErr := GetBaseDirs()
+	if getErr != nil {
+		t.Fatalf("unexpected error: %v", getErr)
+	}
 	if len(result) != len(expected) || result[0] != expected[0] {
 		t.Errorf("expected %v, got %v", expected, result)
 	}
 }
 
 func TestGetBaseDirsReturnsCorrectValueWhenNotLocal(t *testing.T) {
+	viper.Reset()
+	t.Cleanup(viper.Reset)
 	viper.Set(GitCtlLocal, false)
 	workingDir, _ := os.Getwd()
 	expected := []string{workingDir}
 	viper.Set(GitCtlBaseDirs, expected)
-	result := GetBaseDirs()
+	result, err := GetBaseDirs()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
 	if len(result) != len(expected) || result[0] != expected[0] {
 		t.Errorf("expected %v, got %v", expected, result)
 	}
