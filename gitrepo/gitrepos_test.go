@@ -2,6 +2,7 @@ package gitrepo
 
 import (
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/spf13/viper"
@@ -70,9 +71,8 @@ func TestFindGitReposInBaseDirs(t *testing.T) {
 
 	// Assert that there was no error and the result is as expected
 	assert.NoError(t, err)
-	// Without more information, it's hard to say what the expected result is.
-	// Here's an example where we just check that the result is not nil.
 	assert.NotNil(t, repos)
+	assert.Len(t, repos, 1)
 }
 
 func TestFindGitReposInvalidBaseDirs(t *testing.T) {
@@ -86,3 +86,17 @@ func TestFindGitReposInvalidBaseDirs(t *testing.T) {
 	assert.Error(t, err)
 	assert.Nil(t, repos)
 }
+
+func TestRunGitCommandAggregatesErrorsFromInvalidAndValidBaseDirs(t *testing.T) {
+	viper.Reset()
+	t.Cleanup(viper.Reset)
+	viper.Set(config.GitCtlDryRun, true)
+
+	testDir, _ := filepath.Abs(testDirPath)
+	baseDirs := []string{invalidPath, testDir}
+
+	err := RunGitCommand(GitStatus, baseDirs)
+	assert.Error(t, err)
+	assert.True(t, strings.Contains(err.Error(), "failed to find repositories"))
+}
+

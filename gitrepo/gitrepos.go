@@ -10,10 +10,9 @@ import (
 )
 
 func RunGitCommand(command string, baseDirs []string) error {
-	allGitRepos, err := findGitReposInBaseDirs(baseDirs)
-	if err != nil {
-		log.Println(err)
-		return err
+	allGitRepos, findErr := findGitReposInBaseDirs(baseDirs)
+	if findErr != nil {
+		log.Println(findErr)
 	}
 
 	isVerbose := config.IsVerbose()
@@ -23,6 +22,9 @@ func RunGitCommand(command string, baseDirs []string) error {
 		fmt.Printf("\n============ GIT OUTPUT (VERBOSE) ============\n")
 	}
 	var commandErrors []error
+	if findErr != nil {
+		commandErrors = append(commandErrors, findErr)
+	}
 	for _, gitRepo := range allGitRepos {
 		output, err := gitRepo.RunGitCommand(command)
 		if err != nil {
@@ -48,6 +50,7 @@ func RunGitCommand(command string, baseDirs []string) error {
 func findGitReposInBaseDirs(baseDirs []string) ([]GitRepo, error) {
 	var allGitRepos []GitRepo
 	var verbose = config.IsVerbose()
+	var findErrors []error
 
 	for _, baseDir := range baseDirs {
 		if verbose {
@@ -57,11 +60,12 @@ func findGitReposInBaseDirs(baseDirs []string) ([]GitRepo, error) {
 		repos, err := FindGitRepos(baseDir)
 		if err != nil {
 			log.Println(err)
-			return nil, err
+			findErrors = append(findErrors, fmt.Errorf("failed to find repositories in %s: %w", baseDir, err))
+			continue
 		}
 		color.PrintSuccess(fmt.Sprintf("Found %d git directories in %s \n", len(repos), baseDir))
 		allGitRepos = append(allGitRepos, repos...)
 	}
 
-	return allGitRepos, nil
+	return allGitRepos, errors.Join(findErrors...)
 }
