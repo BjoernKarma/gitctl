@@ -12,6 +12,9 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Version is set at build time via -ldflags.
+var Version = "dev"
+
 var (
 	// Used for flags.
 	configFile  string
@@ -31,7 +34,7 @@ var rootCmd = &cobra.Command{
 	Long: `Run git commands on multiple git repositories. 
 For example, you can run 'gitctl pull' to pull all the git 
 repositories in the base directories.`,
-	Version: "1.2.0",
+	Version: Version,
 }
 
 // Execute executes the root command.
