@@ -3,7 +3,6 @@ package gitrepo
 import (
 	"errors"
 	"fmt"
-	"log"
 
 	"github.com/bjoernkarma/gitctl/color"
 	"github.com/bjoernkarma/gitctl/config"
@@ -12,7 +11,7 @@ import (
 func RunGitCommand(command string, baseDirs []string) error {
 	allGitRepos, findErr := findGitReposInBaseDirs(baseDirs)
 	if findErr != nil {
-		log.Println(findErr)
+		color.PrintError(fmt.Sprintf("Error finding repositories: %v", findErr))
 	}
 
 	isVerbose := config.IsVerbose()
@@ -28,10 +27,13 @@ func RunGitCommand(command string, baseDirs []string) error {
 	for _, gitRepo := range allGitRepos {
 		output, err := gitRepo.RunGitCommand(command)
 		if err != nil {
-			log.Println(err)
 			commandErrors = append(commandErrors, err)
-		}
-		if isVerbose && !isQuiet {
+			// Always display the formatted git output on failure so the user
+			// can see exactly what went wrong, regardless of verbose mode.
+			if !isQuiet {
+				fmt.Printf("%s", output)
+			}
+		} else if isVerbose && !isQuiet {
 			fmt.Printf("%s", output)
 		}
 
@@ -59,7 +61,6 @@ func findGitReposInBaseDirs(baseDirs []string) ([]GitRepo, error) {
 
 		repos, err := FindGitRepos(baseDir)
 		if err != nil {
-			log.Println(err)
 			findErrors = append(findErrors, fmt.Errorf("failed to find repositories in %s: %w", baseDir, err))
 			continue
 		}

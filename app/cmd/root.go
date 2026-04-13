@@ -1,16 +1,24 @@
 package cmd
 
 import (
+	"errors"
+	"fmt"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/bjoernkarma/gitctl/config"
 
-	"github.com/pkg/errors"
+	pkgerrors "github.com/pkg/errors"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
+
+// ErrSilent is returned by commands whose errors have already been displayed
+// nicely via the color package. It causes a non-zero exit without printing
+// any additional "Error: ..." text from cobra.
+var ErrSilent = errors.New("")
 
 // Version is set at build time via -ldflags.
 var Version = "dev"
@@ -39,7 +47,18 @@ repositories in the base directories.`,
 
 // Execute executes the root command.
 func Execute() error {
-	return rootCmd.Execute()
+	rootCmd.SilenceErrors = true
+	rootCmd.SilenceUsage = true
+	if err := rootCmd.Execute(); err != nil {
+		// ErrSilent means the error has already been displayed — just exit 1.
+		if errors.Is(err, ErrSilent) {
+			os.Exit(1)
+		}
+		// For all other errors (e.g. unknown commands) print them and exit 1.
+		_, _ = fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
+	}
+	return nil
 }
 
 func init() {
@@ -78,12 +97,12 @@ func InitConfig() error {
 	} else {
 		workingDir, err := config.GitctlWorkingDir()
 		if err != nil {
-			return errors.Wrap(err, "failed to determine working directory")
+			return pkgerrors.Wrap(err, "failed to determine working directory")
 		}
 
 		configDir, err := config.GitctlConfigDir()
 		if err != nil {
-			return errors.Wrap(err, "failed to determine config directory")
+			return pkgerrors.Wrap(err, "failed to determine config directory")
 		}
 
 		viper.SetConfigName("gitctl")
@@ -103,7 +122,7 @@ func InitConfig() error {
 		if errors.As(err, &configFileNotFoundError) {
 			log.Println("No configuration file found, using defaults and environment variables")
 		} else {
-			return errors.Wrap(err, "failed to read configuration file")
+			return pkgerrors.Wrap(err, "failed to read configuration file")
 		}
 	} else {
 		log.Printf("Using configuration file: %s", viper.ConfigFileUsed())
