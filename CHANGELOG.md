@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/BjoernKarma/gitctl/compare/v1.0.0...v1.1.0) (2026-04-13)
+
+
+### Features
+
+* add a dedicated "Git Command Failures" Section ([#87](https://github.com/BjoernKarma/gitctl/issues/87)) ([b31ce8d](https://github.com/BjoernKarma/gitctl/commit/b31ce8d322e0db3bc054996cf813d43090c9b309))
+
 # 1.0.0 (2026-04-13)
 
 
