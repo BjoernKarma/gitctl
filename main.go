@@ -1,14 +1,9 @@
 package main
 
 import (
-	"log"
-
 	"github.com/bjoernkarma/gitctl/app/cmd"
 )
 
 func main() {
-	err := cmd.Execute()
-	if err != nil {
-		log.Fatal(err)
-	}
+	_ = cmd.Execute() // Execute handles all error display and os.Exit internally
 }

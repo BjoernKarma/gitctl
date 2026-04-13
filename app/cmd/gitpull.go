@@ -15,6 +15,10 @@ var pullCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		return gitrepo.RunGitCommand(gitrepo.GitPull, baseDirs)
+		if err := gitrepo.RunGitCommand(gitrepo.GitPull, baseDirs); err != nil {
+			// Errors have already been displayed via the color package.
+			return ErrSilent
+		}
+		return nil
 	},
 }

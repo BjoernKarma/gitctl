@@ -18,6 +18,18 @@ var (
 		"is up to date.":      color.FgGreen,
 		"Fast-forward":        color.FgYellow,
 		"cannot pull with rebase: You have unstaged changes": color.FgRed,
+		// generic git error patterns
+		"fatal:":                   color.FgRed,
+		"error:":                   color.FgRed,
+		"ERROR:":                   color.FgRed,
+		"not a git repository":     color.FgRed,
+		"couldn't find remote ref": color.FgRed,
+		"Authentication failed":    color.FgRed,
+		"Permission denied":        color.FgRed,
+		"could not read Username":  color.FgRed,
+		"repository not found":     color.FgRed,
+		"Connection refused":       color.FgRed,
+		"unable to access":         color.FgRed,
 	}
 )
 
