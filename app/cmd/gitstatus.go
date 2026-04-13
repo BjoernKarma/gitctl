@@ -15,6 +15,10 @@ var statusCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		return gitrepo.RunGitCommand(gitrepo.GitStatus, baseDirs)
+		if err := gitrepo.RunGitCommand(gitrepo.GitStatus, baseDirs); err != nil {
+			// Errors have already been displayed via the color package.
+			return ErrSilent
+		}
+		return nil
 	},
 }
