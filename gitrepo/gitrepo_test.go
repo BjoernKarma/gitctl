@@ -108,14 +108,15 @@ func TestGitRepoEmptyRunGitStatus(t *testing.T) {
 
 func TestGitRepoRunGitPull(t *testing.T) {
 
-	// Call the function under test
-	testDir, _ := filepath.Abs(microserviceDirPath)
-	gitRepo := GitRepo{path: testDir}
+	// Use an invalid path to deterministically force a git pull execution failure.
+	gitRepo := GitRepo{path: invalidPath}
 
 	output, err := gitRepo.RunGitCommand(GitPull)
 
 	// Pull should propagate git subprocess failures while still returning formatted output.
-	assert.Error(t, err)
+	if !assert.Error(t, err) {
+		return
+	}
 	assert.NotNil(t, output)
 	assert.True(t, strings.Contains(err.Error(), "git pull failed"))
 }
