@@ -3,6 +3,7 @@ package gitrepo
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/bjoernkarma/gitctl/color"
 	"github.com/bjoernkarma/gitctl/config"
@@ -28,9 +29,10 @@ func RunGitCommand(command string, baseDirs []string) error {
 		output, err := gitRepo.RunGitCommand(command)
 		if err != nil {
 			commandErrors = append(commandErrors, err)
-			// Always display the formatted git output on failure so the user
-			// can see exactly what went wrong, regardless of verbose mode.
-			if !isQuiet {
+			errorMsg := extractErrorMessage(string(output))
+			color.AddGitCommandFailure(gitRepo.path, errorMsg, string(output))
+			// In verbose mode, show the full formatted output immediately
+			if isVerbose && !isQuiet {
 				fmt.Printf("%s", output)
 			}
 		} else if isVerbose && !isQuiet {
@@ -69,4 +71,48 @@ func findGitReposInBaseDirs(baseDirs []string) ([]GitRepo, error) {
 	}
 
 	return allGitRepos, errors.Join(findErrors...)
+}
+
+// extractErrorMessage pulls the most relevant error message from git output.
+// Skips the formatted header (with separators) and looks for explicit error patterns.
+func extractErrorMessage(output string) string {
+	lines := strings.Split(output, "\n")
+	var gitOutputLines []string
+
+	// Skip the formatted header section (path + separator line)
+	inHeader := true
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if inHeader {
+			// Look for the separator line to know when header ends
+			if strings.HasPrefix(trimmed, "=") && len(trimmed) > 20 {
+				inHeader = false
+				continue
+			}
+		} else {
+			gitOutputLines = append(gitOutputLines, line)
+		}
+	}
+
+	// First pass: look for explicit error/fatal lines in git output
+	for _, line := range gitOutputLines {
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "" {
+			continue
+		}
+		if strings.Contains(trimmed, "fatal:") || strings.Contains(trimmed, "error:") || strings.Contains(trimmed, "ERROR:") {
+			return trimmed
+		}
+	}
+
+	// Second pass: return first non-empty line from git output
+	for _, line := range gitOutputLines {
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "" {
+			continue
+		}
+		return trimmed
+	}
+
+	return "Unknown error"
 }
