@@ -1,5 +1,11 @@
 # gitctl
 
+[![CI](https://github.com/BjoernKarma/gitctl/actions/workflows/ci.yaml/badge.svg)](https://github.com/BjoernKarma/gitctl/actions/workflows/ci.yaml)
+[![Release](https://img.shields.io/github/v/release/BjoernKarma/gitctl)](https://github.com/BjoernKarma/gitctl/releases/latest)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/BjoernKarma/gitctl)](https://github.com/BjoernKarma/gitctl/blob/main/go.mod)
+[![Go Report Card](https://goreportcard.com/badge/github.com/bjoernkarma/gitctl)](https://goreportcard.com/report/github.com/bjoernkarma/gitctl)
+[![License](https://img.shields.io/github/license/BjoernKarma/gitctl)](https://github.com/BjoernKarma/gitctl/blob/main/LICENSE)
+
 ## Description
 
 `gitctl` is a command-line interface (CLI) tool designed to simplify and streamline your GitLab workflow. It is built with Go and is designed to be easy to use and highly efficient.
