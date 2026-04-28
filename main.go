@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	_ = cmd.Execute() // Execute handles all error display and os.Exit internally
+	cmd.Execute()
 }

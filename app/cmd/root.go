@@ -45,7 +45,7 @@ repositories in the base directories.`,
 }
 
 // Execute executes the root command.
-func Execute() error {
+func Execute() {
 	rootCmd.SilenceErrors = true
 	rootCmd.SilenceUsage = true
 	if err := rootCmd.Execute(); err != nil {
@@ -57,7 +57,6 @@ func Execute() error {
 		_, _ = fmt.Fprintln(os.Stderr, "Error:", err)
 		os.Exit(1)
 	}
-	return nil
 }
 
 func init() {
@@ -76,14 +75,21 @@ func init() {
 	rootCmd.PersistentFlags().StringSliceVar(&baseDirs, "base.dirs", []string{}, "base directories for git repositories")
 
 	// Bind flags to Viper settings
-	_ = viper.BindPFlag(config.GitCtlQuiet, rootCmd.PersistentFlags().Lookup("quiet"))
-	_ = viper.BindPFlag(config.GitCtlVerbose, rootCmd.PersistentFlags().Lookup("verbose"))
-	_ = viper.BindPFlag(config.GitCtlDebug, rootCmd.PersistentFlags().Lookup("debug"))
-	_ = viper.BindPFlag(config.GitCtlLocal, rootCmd.PersistentFlags().Lookup("local"))
-	_ = viper.BindPFlag(config.GitCtlDryRun, rootCmd.PersistentFlags().Lookup("dryRun"))
-	_ = viper.BindPFlag(config.GitCtlColor, rootCmd.PersistentFlags().Lookup("color"))
-	_ = viper.BindPFlag(config.GitCtlConcurrency, rootCmd.PersistentFlags().Lookup("concurrency"))
-	_ = viper.BindPFlag(config.GitCtlBaseDirs, rootCmd.PersistentFlags().Lookup("base.dirs"))
+	bindFlags := map[string]string{
+		config.GitCtlQuiet:       "quiet",
+		config.GitCtlVerbose:     "verbose",
+		config.GitCtlDebug:       "debug",
+		config.GitCtlLocal:       "local",
+		config.GitCtlDryRun:      "dryRun",
+		config.GitCtlColor:       "color",
+		config.GitCtlConcurrency: "concurrency",
+		config.GitCtlBaseDirs:    "base.dirs",
+	}
+	for key, flag := range bindFlags {
+		if err := viper.BindPFlag(key, rootCmd.PersistentFlags().Lookup(flag)); err != nil {
+			log.Fatalf("failed to bind flag %s: %v", flag, err)
+		}
+	}
 
 	rootCmd.AddCommand(statusCmd)
 	rootCmd.AddCommand(pullCmd)
