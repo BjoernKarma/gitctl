@@ -2,12 +2,13 @@ package color
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 
 	"github.com/charmbracelet/lipgloss/tree"
 	"github.com/fatih/color"
+
+	"github.com/bjoernkarma/gitctl/config"
 )
 
 type GitCommandFailure struct {
@@ -115,22 +116,11 @@ func PrintGitCommandFailures() {
 
 	PrintError("\n============ Git Command Failures ============\n")
 
-	isVerbose := false
-	// Check if verbose mode is enabled
-	if c, ok := os.LookupEnv("GITCTL_VERBOSITY_VERBOSE"); ok && c == "true" {
-		isVerbose = true
-	}
-	// Also check via viper in case it was set from config file
-	if !isVerbose {
-		isVerbose = isConfigVerbose()
-	}
-
 	for _, failure := range gitCommandFailures {
 		PrintError(fmt.Sprintf("  ✗ %s", failure.RepoPath))
 		PrintError(fmt.Sprintf("    Reason: %s", failure.ErrorMsg))
 
-		// In verbose mode, also show the full git output
-		if isVerbose {
+		if config.IsVerbose() {
 			PrintError("\n    Full output:")
 			for _, line := range strings.Split(failure.FullOutput, "\n") {
 				if strings.TrimSpace(line) != "" {
@@ -140,19 +130,6 @@ func PrintGitCommandFailures() {
 			PrintError("")
 		}
 	}
-}
-
-func isConfigVerbose() bool {
-	// Attempt to get verbose setting from viper if it's already initialized
-	// This handles cases where viper config was loaded but GITCTL_VERBOSITY_VERBOSE wasn't set
-	defer func() {
-		if recover() != nil {
-			// Viper might not be initialized yet; safe to ignore
-		}
-	}()
-
-	// This is a safe check that won't panic
-	return false // Will be handled by environment variable check above
 }
 
 func PrintGitStatistics() {

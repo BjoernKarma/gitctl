@@ -38,7 +38,7 @@ func TestCommandReturnsErrorForInvalidConfigFile(t *testing.T) {
 	viper.Reset()
 	tmpDir := t.TempDir()
 	invalidConfig := filepath.Join(tmpDir, "gitctl.yaml")
-	err := os.WriteFile(invalidConfig, []byte("verbosity: ["), 0600)
+	err := os.WriteFile(invalidConfig, []byte("verbosity: ["), 0o600)
 	assert.NoError(t, err)
 
 	rootCmd.SetArgs([]string{"status", "--config", invalidConfig, "--local", "--dryRun"})
