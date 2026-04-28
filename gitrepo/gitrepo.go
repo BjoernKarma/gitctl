@@ -30,7 +30,7 @@ const (
 )
 
 func FindGitRepos(root string) ([]GitRepo, error) {
-	var verbose = config.IsVerbose()
+	verbose := config.IsVerbose()
 	var repos []GitRepo
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -56,8 +56,8 @@ func FindGitRepos(root string) ([]GitRepo, error) {
 }
 
 func (gitRepo *GitRepo) RunGitCommand(command string) ([]byte, error) {
-	var verbose = config.IsVerbose()
-	var dryRun = config.IsDryRun()
+	verbose := config.IsVerbose()
+	dryRun := config.IsDryRun()
 	repoPath := ""
 	if gitRepo != nil {
 		repoPath = gitRepo.path

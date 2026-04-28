@@ -7,12 +7,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/bjoernkarma/gitctl/config"
-
 	pkgerrors "github.com/pkg/errors"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/bjoernkarma/gitctl/config"
 )
 
 // ErrSilent is returned by commands whose errors have already been displayed

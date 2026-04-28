@@ -27,7 +27,7 @@ func expectNoMessageIsPrinted(t *testing.T, buf bytes.Buffer) {
 }
 
 func TestPrintColored_InvalidOutput(t *testing.T) {
-	var buf = errorWriter{}
+	buf := errorWriter{}
 	color.Output = &buf
 	defer func() {
 		color.Output = nil
