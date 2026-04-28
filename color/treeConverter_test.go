@@ -23,7 +23,7 @@ func TestAddRepositoryPathToTree_MergeCommonParts(t *testing.T) {
 				Root(FolderIcon + "dev").
 				Child(FolderIcon + "github").Child(FolderIcon + "middleware"))
 
-	var path = filepath.Join("usr", "dev", "middleware")
+	path := filepath.Join("usr", "dev", "middleware")
 	AddRepositoryPathToTree(source, path)
 
 	if source.String() != combinedTree.String() {
@@ -34,7 +34,7 @@ func TestAddRepositoryPathToTree_MergeCommonParts(t *testing.T) {
 func TestAddRepositoryPathToTree_EmptyRoot(t *testing.T) {
 	var source *tree.Tree
 
-	var path = filepath.Join("usr", "dev", "middleware")
+	path := filepath.Join("usr", "dev", "middleware")
 	source = AddRepositoryPathToTree(source, path)
 
 	expectedTree := tree.New().Root(FolderIcon + "usr").
@@ -75,7 +75,7 @@ func TestAddRepositoryPathToTree_RootOnly(t *testing.T) {
 func TestAddRepositoryPathToTree_NestedPath(t *testing.T) {
 	source := tree.New().Root(FolderIcon + "usr")
 
-	var path = filepath.Join("usr", "dev", "github", "middleware")
+	path := filepath.Join("usr", "dev", "github", "middleware")
 	AddRepositoryPathToTree(source, path)
 
 	expectedTree := tree.New().Root(FolderIcon + "usr").
@@ -119,7 +119,7 @@ func TestConvertRepositoryPathToTree_SingleLevelPath(t *testing.T) {
 }
 
 func TestConvertRepositoryPathToTree_MultiLevelPath(t *testing.T) {
-	var path = filepath.Join("usr", "dev", "github", "middleware")
+	path := filepath.Join("usr", "dev", "github", "middleware")
 	result := ConvertRepositoryPathToTree(path, BLUE)
 	expectedTree := tree.New().Root(FolderIcon + "usr").
 		Enumerator(tree.RoundedEnumerator).

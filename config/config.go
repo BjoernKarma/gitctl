@@ -28,8 +28,7 @@ func GitctlConfigDir() (string, error) {
 // HomeDir finds the users home directory
 func HomeDir() (string, error) {
 	// Find home directory.
-	var home string
-	home = os.Getenv("HOME")
+	home := os.Getenv("HOME")
 	if home == "" {
 		var err error
 		home, err = os.UserHomeDir()
@@ -39,6 +38,7 @@ func HomeDir() (string, error) {
 			log.Println("Using temporary directory as home directory instead")
 		}
 	} else {
+		home = filepath.Clean(home)
 		info, err := os.Stat(home)
 		if err != nil {
 			return "", fmt.Errorf("failed to stat home directory %s: %w", home, err)

@@ -20,14 +20,14 @@ const (
 func createTestFilesAndFolders() {
 	dirPath := filepath.Join(microserviceDirPath, ".git")
 	// Set directory permissions to 0700 for secure access
-	err := os.MkdirAll(dirPath, 0700)
+	err := os.MkdirAll(dirPath, 0o700)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Create a sample file in the directory
 	filePath := filepath.Join(dirPath, "service.txt")
-	err = os.WriteFile(filePath, []byte("sample content"), 0600)
+	err = os.WriteFile(filePath, []byte("sample content"), 0o600)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -59,7 +59,6 @@ func TestMain(m *testing.M) {
 }
 
 func TestFindGitRepos(t *testing.T) {
-
 	// Call the function under test
 	testDir, _ := filepath.Abs(testDirPath)
 	repos, err := FindGitRepos(testDir)
@@ -72,7 +71,6 @@ func TestFindGitRepos(t *testing.T) {
 }
 
 func TestFindGitReposInvalidPath(t *testing.T) {
-
 	// Call the function under test
 	repos, err := FindGitRepos(invalidPath)
 
@@ -82,7 +80,6 @@ func TestFindGitReposInvalidPath(t *testing.T) {
 }
 
 func TestGitRepoRunGitStatus(t *testing.T) {
-
 	// Call the function under test
 	testDir, _ := filepath.Abs(microserviceDirPath)
 	gitRepo := GitRepo{path: testDir}
@@ -95,7 +92,6 @@ func TestGitRepoRunGitStatus(t *testing.T) {
 }
 
 func TestGitRepoEmptyRunGitStatus(t *testing.T) {
-
 	// Call the function under test
 	gitRepo := GitRepo{path: ""}
 
@@ -107,7 +103,6 @@ func TestGitRepoEmptyRunGitStatus(t *testing.T) {
 }
 
 func TestGitRepoRunGitPull(t *testing.T) {
-
 	// Use an invalid path to deterministically force a git pull execution failure.
 	gitRepo := GitRepo{path: invalidPath}
 
@@ -122,7 +117,6 @@ func TestGitRepoRunGitPull(t *testing.T) {
 }
 
 func TestGitRepoRunGitCommand(t *testing.T) {
-
 	// Call the function under test
 	testDir, _ := filepath.Abs(microserviceDirPath)
 	gitRepo := GitRepo{path: testDir}

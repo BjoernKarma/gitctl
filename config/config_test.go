@@ -33,7 +33,7 @@ func TestHomeDirHandlesEmptyHomeEnv(t *testing.T) {
 
 func TestHomeDirReturnsErrorForInvalidHomeEnv(t *testing.T) {
 	notADir := filepath.Join(t.TempDir(), "not-a-dir")
-	err := os.WriteFile(notADir, []byte("x"), 0600)
+	err := os.WriteFile(notADir, []byte("x"), 0o600)
 	if err != nil {
 		t.Fatalf("failed to create file: %v", err)
 	}

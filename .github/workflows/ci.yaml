@@ -24,4 +24,6 @@ jobs:
     with:
       name: gitctl
       module: .
+      run_check_generated_files: false
       ko_build_path: "main.go"
+      lint_fail_on_issues: true

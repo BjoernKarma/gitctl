@@ -53,7 +53,7 @@ func RunGitCommand(command string, baseDirs []string) error {
 
 func findGitReposInBaseDirs(baseDirs []string) ([]GitRepo, error) {
 	var allGitRepos []GitRepo
-	var verbose = config.IsVerbose()
+	verbose := config.IsVerbose()
 	var findErrors []error
 
 	for _, baseDir := range baseDirs {

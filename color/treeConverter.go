@@ -35,9 +35,11 @@ func AddRepositoryPathToTree(root *tree.Tree, path string) *tree.Tree {
 		for i := 0; i < current.Children().Length(); i++ {
 			child := current.Children().At(i)
 			if child.Value() == FolderIcon+part {
-				current = child.(*tree.Tree)
-				found = true
-				break
+				if t, ok := child.(*tree.Tree); ok {
+					current = t
+					found = true
+					break
+				}
 			}
 		}
 		if !found {
