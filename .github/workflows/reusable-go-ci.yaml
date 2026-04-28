@@ -87,6 +87,9 @@ on:
         description: "Image digest from the build image step"
         value: ${{ jobs.build.outputs.image_digest }}
 
+permissions:
+  contents: read
+
 jobs:
   static_checks:
     name: "Static Checks for ${{ inputs.name }}"
@@ -135,6 +138,10 @@ jobs:
     name: "Tests & Coverage for ${{ inputs.name }}"
     if: ${{ inputs.run_tests }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
     outputs:
       test_reports_artifact_id: ${{ steps.upload_test_reports_artifact_step.outputs.artifact-id }}
     steps:
@@ -253,6 +260,10 @@ jobs:
     name: "CodeQL Analysis for ${{ inputs.name }}"
     if: ${{ inputs.run_code_analysis }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
     steps:
       - name: Checkout Code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -306,6 +317,9 @@ jobs:
     if: ${{ inputs.run_build_image && (needs.static_checks.result != 'failure') && (needs.tests.result != 'failure') }}
     needs: [tests]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     outputs:
       image_digest: ${{ steps.build_image_ko_step.outputs.digest }}
       repo_lower: ${{ steps.repo_lower.outputs.repo }}
