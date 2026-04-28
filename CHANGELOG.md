@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/BjoernKarma/gitctl/compare/v1.1.0...v1.1.1) (2026-04-28)
+
+
+### Bug Fixes
+
+* restrict top-level workflow token permissions to read-only ([#89](https://github.com/BjoernKarma/gitctl/issues/89)) ([9f3ff5f](https://github.com/BjoernKarma/gitctl/commit/9f3ff5fc28407bab8f4b655928ea1f91033368a5)), closes [#9](https://github.com/BjoernKarma/gitctl/issues/9) [#18-23](https://github.com/BjoernKarma/gitctl/issues/18-23)
+
 # [1.1.0](https://github.com/BjoernKarma/gitctl/compare/v1.0.0...v1.1.0) (2026-04-13)
 
 
