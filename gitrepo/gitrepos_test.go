@@ -99,3 +99,65 @@ func TestRunGitCommandAggregatesErrorsFromInvalidAndValidBaseDirs(t *testing.T) 
 	assert.Error(t, err)
 	assert.True(t, strings.Contains(err.Error(), "failed to find repositories"))
 }
+
+func TestRunGitCommandWithConcurrencyGreaterThanOneProcessesAllRepos(t *testing.T) {
+	viper.Reset()
+	t.Cleanup(viper.Reset)
+	viper.Set(config.GitCtlDryRun, true)
+	viper.Set(config.GitCtlConcurrency, 3)
+
+	testDir, _ := filepath.Abs(testDirPath)
+	baseDirs := []string{testDir}
+
+	err := RunGitCommand(GitStatus, baseDirs)
+	assert.NoError(t, err)
+}
+
+func TestRunWithWorkerPoolClampsNegativeConcurrencyToOne(t *testing.T) {
+	viper.Reset()
+	t.Cleanup(viper.Reset)
+	viper.Set(config.GitCtlDryRun, true)
+	viper.Set(config.GitCtlConcurrency, -1)
+
+	testDir, _ := filepath.Abs(testDirPath)
+	repos, err := findGitReposInBaseDirs([]string{testDir})
+	assert.NoError(t, err)
+
+	results := runWithWorkerPool(GitStatus, repos)
+	assert.Len(t, results, len(repos))
+}
+
+func TestRunWithWorkerPoolClampsZeroConcurrencyToOne(t *testing.T) {
+	viper.Reset()
+	t.Cleanup(viper.Reset)
+	viper.Set(config.GitCtlDryRun, true)
+	viper.Set(config.GitCtlConcurrency, 0)
+
+	testDir, _ := filepath.Abs(testDirPath)
+	repos, err := findGitReposInBaseDirs([]string{testDir})
+	assert.NoError(t, err)
+
+	results := runWithWorkerPool(GitStatus, repos)
+	assert.Len(t, results, len(repos))
+}
+
+func TestRunWithWorkerPoolPreservesDiscoveryOrder(t *testing.T) {
+	viper.Reset()
+	t.Cleanup(viper.Reset)
+	viper.Set(config.GitCtlConcurrency, 3)
+
+	testDir, _ := filepath.Abs(microserviceDirPath)
+	// Mix valid and invalid repos to confirm results are indexed by discovery order.
+	repos := []GitRepo{
+		{path: testDir},     // index 0: valid — no error expected
+		{path: invalidPath}, // index 1: invalid — error expected
+		{path: testDir},     // index 2: valid — no error expected
+	}
+
+	results := runWithWorkerPool(GitStatus, repos)
+
+	assert.Len(t, results, 3)
+	assert.NoError(t, results[0].err)
+	assert.Error(t, results[1].err)
+	assert.NoError(t, results[2].err)
+}

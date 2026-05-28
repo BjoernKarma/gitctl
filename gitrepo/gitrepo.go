@@ -55,7 +55,9 @@ func FindGitRepos(root string) ([]GitRepo, error) {
 	}
 }
 
-func (gitRepo *GitRepo) RunGitCommand(command string) ([]byte, error) {
+// runRaw executes the git command and returns raw combined output without any
+// color formatting or global state mutations. Safe to call from goroutines.
+func (gitRepo *GitRepo) runRaw(command string) ([]byte, error) {
 	verbose := config.IsVerbose()
 	dryRun := config.IsDryRun()
 	repoPath := ""
@@ -88,10 +90,26 @@ func (gitRepo *GitRepo) RunGitCommand(command string) ([]byte, error) {
 
 	gitCmd.Dir = repoPath
 	out, err := gitCmd.CombinedOutput()
-	// Format the output with headers and separators and color
-	formattedOutput := FormatOutput(repoPath, out)
 	if err != nil {
-		return []byte(formattedOutput), fmt.Errorf("git %s failed for %s: %w", command, repoPath, err)
+		return out, fmt.Errorf("git %s failed for %s: %w", command, repoPath, err)
+	}
+	return out, nil
+}
+
+// RunGitCommand executes the git command and returns color-formatted output.
+// Not safe to call from concurrent goroutines (mutates global color state).
+func (gitRepo *GitRepo) RunGitCommand(command string) ([]byte, error) {
+	repoPath := ""
+	if gitRepo != nil {
+		repoPath = gitRepo.path
+	}
+	raw, err := gitRepo.runRaw(command)
+	if raw == nil && err == nil {
+		return nil, nil
+	}
+	formattedOutput := FormatOutput(repoPath, raw)
+	if err != nil {
+		return []byte(formattedOutput), err
 	}
 	return []byte(formattedOutput), nil
 }
