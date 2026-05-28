@@ -92,11 +92,21 @@ func TestIsColoredReturnsFalseWhenDisabled(t *testing.T) {
 }
 
 func TestGetConcurrencyReturnsCorrectValue(t *testing.T) {
-	expected := "4"
+	expected := 4
 	viper.Set(GitCtlConcurrency, expected)
 	result := GetConcurrency()
 	if result != expected {
 		t.Errorf("expected %v, got %v", expected, result)
+	}
+}
+
+func TestGetConcurrencyReturnsZeroWhenUnset(t *testing.T) {
+	viper.Reset()
+	t.Cleanup(viper.Reset)
+	result := GetConcurrency()
+	// viper returns 0 for unset int keys; clamping to 1 is the caller's responsibility
+	if result != 0 {
+		t.Errorf("expected 0 (unset), got %v", result)
 	}
 }
 

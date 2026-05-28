@@ -56,9 +56,9 @@ func IsColored() bool {
 	return viper.GetBool(GitCtlColor)
 }
 
-// GetConcurrency returns the concurrency level as a string
-func GetConcurrency() string {
-	return viper.GetString(GitCtlConcurrency)
+// GetConcurrency returns the concurrency level as an integer
+func GetConcurrency() int {
+	return viper.GetInt(GitCtlConcurrency)
 }
 
 // GetBaseDirs returns the base directories as a slice of strings

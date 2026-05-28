@@ -31,7 +31,7 @@ var (
 	local       bool
 	dryRun      bool
 	color       bool
-	concurrency string
+	concurrency int
 	baseDirs    []string
 )
 
@@ -71,7 +71,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&local, "local", "l", false, "run with working directory used as base directory")
 	rootCmd.PersistentFlags().BoolVarP(&dryRun, "dryRun", "D", false, "run with dry run mode")
 	rootCmd.PersistentFlags().BoolVarP(&color, "color", "c", true, "color output")
-	rootCmd.PersistentFlags().StringVarP(&concurrency, "concurrency", "C", "1", "number of concurrent operations")
+	rootCmd.PersistentFlags().IntVarP(&concurrency, "concurrency", "C", 1, "number of concurrent operations")
 	rootCmd.PersistentFlags().StringSliceVar(&baseDirs, "base.dirs", []string{}, "base directories for git repositories")
 
 	// Bind flags to Viper settings
