@@ -11,8 +11,8 @@ import (
 )
 
 type repoResult struct {
-	output []byte
-	err    error
+	rawOutput []byte
+	err       error
 }
 
 func RunGitCommand(command string, baseDirs []string) error {
@@ -35,15 +35,17 @@ func RunGitCommand(command string, baseDirs []string) error {
 		commandErrors = append(commandErrors, findErr)
 	}
 	for i, result := range results {
+		// FormatOutput mutates global color state — must stay in the main goroutine.
+		formattedOutput := FormatOutput(allGitRepos[i].path, result.rawOutput)
 		if result.err != nil {
 			commandErrors = append(commandErrors, result.err)
-			errorMsg := extractErrorMessage(string(result.output))
-			color.AddGitCommandFailure(allGitRepos[i].path, errorMsg, string(result.output))
+			errorMsg := extractErrorMessage(formattedOutput)
+			color.AddGitCommandFailure(allGitRepos[i].path, errorMsg, formattedOutput)
 			if isVerbose && !isQuiet {
-				fmt.Printf("%s", result.output)
+				fmt.Printf("%s", formattedOutput)
 			}
 		} else if isVerbose && !isQuiet {
-			fmt.Printf("%s", result.output)
+			fmt.Printf("%s", formattedOutput)
 		}
 	}
 
@@ -60,7 +62,8 @@ func RunGitCommand(command string, baseDirs []string) error {
 
 // runWithWorkerPool executes the git command across all repos using a bounded
 // goroutine pool. Results are stored at each repo's discovery index so that
-// the caller can iterate them in deterministic order.
+// the caller can iterate them in deterministic order. Workers call runRaw to
+// avoid concurrent mutations of global color state.
 func runWithWorkerPool(command string, repos []GitRepo) []repoResult {
 	results := make([]repoResult, len(repos))
 	if len(repos) == 0 {
@@ -85,8 +88,8 @@ func runWithWorkerPool(command string, repos []GitRepo) []repoResult {
 		go func() {
 			defer wg.Done()
 			for j := range jobs {
-				output, err := j.repo.RunGitCommand(command)
-				results[j.index] = repoResult{output: output, err: err}
+				raw, err := j.repo.runRaw(command)
+				results[j.index] = repoResult{rawOutput: raw, err: err}
 			}
 		}()
 	}
