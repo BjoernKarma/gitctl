@@ -1,3 +1,11 @@
+# [1.2.0](https://github.com/BjoernKarma/gitctl/compare/v1.1.1...v1.2.0) (2026-05-28)
+
+
+### Features
+
+* concurrency feature ([#97](https://github.com/BjoernKarma/gitctl/issues/97)) ([b833525](https://github.com/BjoernKarma/gitctl/commit/b8335256afc91093ccce6cfac38c05c0fed3d5e7))
+* openspec document existing capabilities ([#96](https://github.com/BjoernKarma/gitctl/issues/96)) ([27ebe2a](https://github.com/BjoernKarma/gitctl/commit/27ebe2a2ee6f0884a1144a32df1384958686d844))
+
 ## [1.1.1](https://github.com/BjoernKarma/gitctl/compare/v1.1.0...v1.1.1) (2026-04-28)
 
 
