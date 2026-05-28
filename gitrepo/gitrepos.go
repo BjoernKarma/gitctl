@@ -4,10 +4,16 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/bjoernkarma/gitctl/color"
 	"github.com/bjoernkarma/gitctl/config"
 )
+
+type repoResult struct {
+	output []byte
+	err    error
+}
 
 func RunGitCommand(command string, baseDirs []string) error {
 	allGitRepos, findErr := findGitReposInBaseDirs(baseDirs)
@@ -21,25 +27,26 @@ func RunGitCommand(command string, baseDirs []string) error {
 	if isVerbose && !isQuiet {
 		fmt.Printf("\n============ GIT OUTPUT (VERBOSE) ============\n")
 	}
+
+	results := runWithWorkerPool(command, allGitRepos)
+
 	var commandErrors []error
 	if findErr != nil {
 		commandErrors = append(commandErrors, findErr)
 	}
-	for _, gitRepo := range allGitRepos {
-		output, err := gitRepo.RunGitCommand(command)
-		if err != nil {
-			commandErrors = append(commandErrors, err)
-			errorMsg := extractErrorMessage(string(output))
-			color.AddGitCommandFailure(gitRepo.path, errorMsg, string(output))
-			// In verbose mode, show the full formatted output immediately
+	for i, result := range results {
+		if result.err != nil {
+			commandErrors = append(commandErrors, result.err)
+			errorMsg := extractErrorMessage(string(result.output))
+			color.AddGitCommandFailure(allGitRepos[i].path, errorMsg, string(result.output))
 			if isVerbose && !isQuiet {
-				fmt.Printf("%s", output)
+				fmt.Printf("%s", result.output)
 			}
 		} else if isVerbose && !isQuiet {
-			fmt.Printf("%s", output)
+			fmt.Printf("%s", result.output)
 		}
-
 	}
+
 	if isVerbose && !isQuiet {
 		fmt.Printf("\n============ GIT OUTPUT END ============\n")
 	}
@@ -49,6 +56,48 @@ func RunGitCommand(command string, baseDirs []string) error {
 	color.PrintGitRepoStatus()
 
 	return errors.Join(commandErrors...)
+}
+
+// runWithWorkerPool executes the git command across all repos using a bounded
+// goroutine pool. Results are stored at each repo's discovery index so that
+// the caller can iterate them in deterministic order.
+func runWithWorkerPool(command string, repos []GitRepo) []repoResult {
+	results := make([]repoResult, len(repos))
+	if len(repos) == 0 {
+		return results
+	}
+
+	concurrency := config.GetConcurrency()
+	if concurrency < 1 {
+		concurrency = 1
+	}
+
+	type job struct {
+		index int
+		repo  GitRepo
+	}
+
+	jobs := make(chan job, len(repos))
+	var wg sync.WaitGroup
+
+	for range concurrency {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := range jobs {
+				output, err := j.repo.RunGitCommand(command)
+				results[j.index] = repoResult{output: output, err: err}
+			}
+		}()
+	}
+
+	for i, repo := range repos {
+		jobs <- job{index: i, repo: repo}
+	}
+	close(jobs)
+
+	wg.Wait()
+	return results
 }
 
 func findGitReposInBaseDirs(baseDirs []string) ([]GitRepo, error) {

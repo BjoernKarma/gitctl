@@ -2,7 +2,7 @@
 
 ## Overview
 
-After discovering repositories, `gitctl` runs a Git command against each one. Currently supported commands are `status` and `pull`.
+After discovering repositories, `gitctl` runs a Git command against each one using a bounded worker pool. Currently supported commands are `status` and `pull`.
 
 ## Supported Commands
 
@@ -13,15 +13,15 @@ After discovering repositories, `gitctl` runs a Git command against each one. Cu
 
 ## Execution Model
 
-Repositories are executed **sequentially** in discovery order.
+Repositories are executed using a bounded goroutine worker pool controlled by `run_mode.concurrency` (default: `1`). When concurrency is `1`, behaviour is identical to sequential execution.
 
-For each repository:
-1. Run `git <command>` in the repository's directory.
-2. Capture combined stdout+stderr output.
-3. Format the output (see [output spec](../output/spec.md)).
-4. If the command fails, record the failure; continue to the next repository.
+For each repository a worker:
+1. Runs `git <command>` in the repository's directory.
+2. Captures combined stdout+stderr output.
+3. Stores the result (output + error) at the repository's discovery index.
+4. If the command fails, records the failure and continues to the next job.
 
-All repository errors are collected. After all repositories are processed, errors are joined and returned as a single error.
+After all workers complete, results are iterated in discovery order: output is printed and errors are aggregated.
 
 ## Dry-Run Mode
 
@@ -32,15 +32,19 @@ When `run_mode.dry_run` is true:
 
 ## Concurrency
 
-The configuration key `run_mode.concurrency` (default: `1`) and corresponding `--concurrency` flag exist but **concurrency is not yet implemented**. All execution is currently sequential regardless of this setting.
+The `run_mode.concurrency` setting (default: `1`) and `--concurrency` / `-C` flag control the worker pool size. Values less than `1` are clamped to `1`.
 
-See the concurrency change proposal for the planned implementation.
+See the [concurrent-execution spec](../concurrent-execution/spec.md) for the full worker pool specification.
 
 ## Error Handling
 
-- A failure in one repository does not stop execution for others.
+- A failure in one repository does not stop others from being processed.
 - Exit code is non-zero if any repository command failed.
 - The error message per failure is extracted from git output: explicit `fatal:` / `error:` lines take priority; otherwise the first non-empty output line is used.
+
+## Output Order
+
+Results are always printed in discovery order, regardless of the order in which workers complete.
 
 ## Empty Repository List
 
