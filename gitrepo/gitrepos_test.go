@@ -161,3 +161,16 @@ func TestRunWithWorkerPoolPreservesDiscoveryOrder(t *testing.T) {
 	assert.Error(t, results[1].err)
 	assert.NoError(t, results[2].err)
 }
+
+func TestRunGitFetchCommand(t *testing.T) {
+	viper.Reset()
+	t.Cleanup(viper.Reset)
+	viper.Set(config.GitCtlDryRun, true)
+
+	command := GitFetch
+	testDir, _ := filepath.Abs(testDirPath)
+	baseDirs := []string{testDir}
+
+	err := RunGitCommand(command, baseDirs)
+	assert.NoError(t, err)
+}
