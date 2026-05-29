@@ -10,6 +10,7 @@ After discovering repositories, `gitctl` runs a Git command against each one usi
 |------------|----------------------|
 | `status`   | `git status`         |
 | `pull`     | `git pull`           |
+| `fetch`    | `git fetch`          |
 
 ## Execution Model
 

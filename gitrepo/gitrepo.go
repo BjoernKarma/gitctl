@@ -14,6 +14,7 @@ import (
 const (
 	gitDirToSearch = ".git"
 	gitCommand     = "git"
+	fetchCommand   = "fetch"
 	pullCommand    = "pull"
 	statusCommand  = "status"
 )
@@ -25,6 +26,7 @@ type GitRepo struct {
 }
 
 const (
+	GitFetch  = "fetch"
 	GitPull   = "pull"
 	GitStatus = "status"
 )
@@ -80,6 +82,8 @@ func (gitRepo *GitRepo) runRaw(command string) ([]byte, error) {
 
 	var gitCmd *exec.Cmd
 	switch command {
+	case GitFetch:
+		gitCmd = exec.Command(gitCommand, fetchCommand)
 	case GitPull:
 		gitCmd = exec.Command(gitCommand, pullCommand)
 	case GitStatus:

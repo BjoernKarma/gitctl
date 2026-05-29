@@ -93,6 +93,7 @@ func init() {
 
 	rootCmd.AddCommand(statusCmd)
 	rootCmd.AddCommand(pullCmd)
+	rootCmd.AddCommand(fetchCmd)
 }
 
 func InitConfig() error {
