@@ -2,16 +2,17 @@
 
 ## Overview
 
-After discovering repositories, `gitctl` runs a Git command against each one using a bounded worker pool. Currently supported commands are `status`, `pull`, `fetch`, and `stash`.
+After discovering repositories, `gitctl` runs a Git command against each one using a bounded worker pool. Currently supported commands are `status`, `pull`, `fetch`, `stash`, and `branch`.
 
 ## Supported Commands
 
-| Subcommand | Git command executed |
-|------------|----------------------|
-| `status`   | `git status`         |
-| `pull`     | `git pull`           |
-| `fetch`    | `git fetch`          |
-| `stash`    | `git stash`          |
+| Subcommand | Git command executed          |
+|------------|-------------------------------|
+| `status`   | `git status`                  |
+| `pull`     | `git pull`                    |
+| `fetch`    | `git fetch`                   |
+| `stash`    | `git stash`                   |
+| `branch`   | `git branch --show-current`   |
 
 ## Execution Model
 

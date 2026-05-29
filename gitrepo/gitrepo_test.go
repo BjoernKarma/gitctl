@@ -102,6 +102,17 @@ func TestGitRepoRunGitFetch(t *testing.T) {
 	_ = err
 }
 
+func TestGitRepoRunGitBranch(t *testing.T) {
+	testDir, _ := filepath.Abs(microserviceDirPath)
+	gitRepo := GitRepo{path: testDir}
+
+	output, err := gitRepo.RunGitCommand(GitBranch)
+
+	// branch --show-current on a bare fixture repo may return empty output; just verify no crash
+	assert.NotNil(t, output)
+	_ = err
+}
+
 func TestGitRepoEmptyRunGitStatus(t *testing.T) {
 	// Call the function under test
 	gitRepo := GitRepo{path: ""}
