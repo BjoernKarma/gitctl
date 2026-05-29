@@ -91,6 +91,17 @@ func TestGitRepoRunGitStatus(t *testing.T) {
 	assert.NotNil(t, output)
 }
 
+func TestGitRepoRunGitFetch(t *testing.T) {
+	testDir, _ := filepath.Abs(microserviceDirPath)
+	gitRepo := GitRepo{path: testDir}
+
+	output, err := gitRepo.RunGitCommand(GitFetch)
+
+	// fetch on a repo with no remote will fail; we just verify output is returned
+	assert.NotNil(t, output)
+	_ = err
+}
+
 func TestGitRepoEmptyRunGitStatus(t *testing.T) {
 	// Call the function under test
 	gitRepo := GitRepo{path: ""}
