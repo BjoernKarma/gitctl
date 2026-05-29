@@ -1,3 +1,12 @@
+# [1.3.0](https://github.com/BjoernKarma/gitctl/compare/v1.2.0...v1.3.0) (2026-05-29)
+
+
+### Features
+
+* add-branch-command ([#100](https://github.com/BjoernKarma/gitctl/issues/100)) ([b5661f0](https://github.com/BjoernKarma/gitctl/commit/b5661f03e3e44e3c579a437083340621998047b2))
+* add-fetch-command ([#98](https://github.com/BjoernKarma/gitctl/issues/98)) ([ade5624](https://github.com/BjoernKarma/gitctl/commit/ade56242b05c1df71797e8fa18c3155da28e941d))
+* add-stash-command ([#99](https://github.com/BjoernKarma/gitctl/issues/99)) ([b0d2263](https://github.com/BjoernKarma/gitctl/commit/b0d22630cef4b956d096bb716cfb44a4ff551466))
+
 # [1.2.0](https://github.com/BjoernKarma/gitctl/compare/v1.1.1...v1.2.0) (2026-05-28)
 
 
