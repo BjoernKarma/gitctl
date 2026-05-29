@@ -95,6 +95,7 @@ func init() {
 	rootCmd.AddCommand(pullCmd)
 	rootCmd.AddCommand(fetchCmd)
 	rootCmd.AddCommand(stashCmd)
+	rootCmd.AddCommand(branchCmd)
 }
 
 func InitConfig() error {
