@@ -28,6 +28,7 @@ type GitRepo struct {
 const (
 	GitFetch  = "fetch"
 	GitPull   = "pull"
+	GitStash  = "stash"
 	GitStatus = "status"
 )
 
