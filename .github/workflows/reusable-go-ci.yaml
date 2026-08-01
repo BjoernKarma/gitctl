@@ -287,7 +287,7 @@ jobs:
             ${{ runner.os }}-go-${{ inputs.module }}-
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # v4.36.0
+        uses: github/codeql-action/init@e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81 # v4.37.3
         with:
           languages: go
           build-mode: manual # Set to manual as we provide a build step
