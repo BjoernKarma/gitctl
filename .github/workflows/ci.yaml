@@ -18,20 +18,33 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  gitctl:
-    name: gitctl
+  build:
+    name: Build
     permissions:
       contents: read
       pull-requests: write
       checks: write
-      security-events: write
-      packages: write
-      actions: read
-    uses: ./.github/workflows/reusable-go-ci.yaml
+    uses: telekom/controlplane/.github/workflows/component-build.yaml@fb4339b77133b8fa10240586b089e2d502d6ab17
     with:
       name: gitctl
       module: .
       run_check_generated_files: false
-      ko_build_path: "main.go"
       lint_fail_on_issues: true
+
+  package:
+    name: Package
+    needs: build
+    if: ${{ github.event_name == 'pull_request' || github.ref == 'refs/heads/main' }}
+    permissions:
+      contents: read
+      packages: write
+    uses: telekom/controlplane/.github/workflows/component-package-build.yaml@fb4339b77133b8fa10240586b089e2d502d6ab17
+    with:
+      name: gitctl
+      module: .
+      ko_build_path: main.go
